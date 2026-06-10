@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'riwayat_screen.dart';
+import 'tambah_screen.dart';
+import 'notifikasi_screen.dart';
+import 'profil_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   final String name;
@@ -233,10 +237,12 @@ class _DashboardScreenState
           ),
         ),
       ),
-
-      bottomNavigationBar:
-          BottomNavigationBar(
+    
+      bottomNavigationBar: BottomNavigationBar(
         currentIndex: selectedIndex,
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey,
+        type: BottomNavigationBarType.fixed,
 
         onTap: (index) {
           setState(() {
@@ -245,23 +251,42 @@ class _DashboardScreenState
 
           switch (index) {
             case 0:
-              menuClicked("Beranda");
               break;
 
             case 1:
-              menuClicked("Riwayat");
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const RiwayatScreen(),
+                ),
+              );
               break;
 
             case 2:
-              menuClicked("Tambah");
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const TambahScreen(),
+                ),
+              );
               break;
 
             case 3:
-              menuClicked("Notifikasi");
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const NotifikasiScreen(),
+                ),
+              );
               break;
 
             case 4:
-              menuClicked("Profil");
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const ProfilScreen(),
+                ),
+              );
               break;
           }
         },
@@ -269,23 +294,23 @@ class _DashboardScreenState
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: "Home",
+            label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.receipt),
-            label: "Riwayat",
+            icon: Icon(Icons.history),
+            label: 'Riwayat',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add_box),
-            label: "Tambah",
+            label: 'Tambah',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.notifications),
-            label: "Notif",
+            label: 'Notif',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: "Profil",
+            label: 'Profil',
           ),
         ],
       ),
