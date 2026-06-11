@@ -11,7 +11,7 @@ class ApiService {
   );
 
 Future<Map<String, dynamic>> login(
-  String email,
+  String nim,
   String password,
   String role,
 ) async {
@@ -19,7 +19,7 @@ Future<Map<String, dynamic>> login(
     final response = await dio.post(
       '/login',
       data: {
-        'email': email,
+        'nim': nim,
         'password': password,
         'role': role,
       },
@@ -29,7 +29,7 @@ Future<Map<String, dynamic>> login(
   } on DioException catch (e) {
     throw Exception(
       e.response?.data['message'] ??
-          'Email atau password salah',
+          'NIM atau password salah',
     );
   }
 }

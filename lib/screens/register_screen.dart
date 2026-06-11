@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 
 import '../services/api_service.dart';
-import 'dashboard_screen.dart';
+import 'login_screen.dart';
 
-class RegisterScreen
-    extends StatefulWidget {
+class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
 
   @override
@@ -62,12 +61,18 @@ class _RegisterScreenState
 
       if (!mounted) return;
 
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "Registrasi berhasil, silakan login",
+          ),
+        ),
+      );
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => DashboardScreen(
-            name: result['user']['name'],
-          ),
+          builder: (_) => const LoginScreen(),
         ),
       );
     } catch (e) {
@@ -127,182 +132,264 @@ class _RegisterScreenState
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final width =
-        MediaQuery.of(context).size.width
-            .clamp(320.0, 390.0);
+@override
+Widget build(BuildContext context) {
+  final width =
+      MediaQuery.of(context).size.width
+          .clamp(320.0, 390.0);
 
-    final height =
-        MediaQuery.of(context).size.height
-            .clamp(650.0, 844.0);
+  final height =
+      MediaQuery.of(context).size.height
+          .clamp(650.0, 844.0);
 
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      backgroundColor:
-          const Color(0xffF2F2F2),
+  return Scaffold(
+    backgroundColor: const Color(0xffF2F2F2),
 
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(
-            horizontal: width * 0.08,
+    body: Stack(
+      children: [
+        Positioned(
+          top: -90,
+          left: -90,
+          child: Container(
+            width: 220,
+            height: 220,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              shape: BoxShape.circle,
+            ),
           ),
-          child: Column(
-            children: [
-              SizedBox(
-                  height: height * 0.08),
+        ),
 
-              Text(
-                "ANTRE.in",
-                style: TextStyle(
+        Positioned(
+          bottom: -90,
+          right: -90,
+          child: Container(
+            width: 220,
+            height: 220,
+            decoration: BoxDecoration(
+              color: Colors.grey.shade300,
+              shape: BoxShape.circle,
+            ),
+          ),
+        ),
+
+        SafeArea(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(
+              horizontal: width * 0.08,
+            ),
+
+            child: Column(
+              children: [
+                SizedBox(
+                  height: height * 0.08,
+                ),
+
+                Text(
+                  "ANTRE.in",
+                  style: TextStyle(
                     fontSize: width * 0.11,
                     fontWeight: FontWeight.w900,
                     letterSpacing: -2,
-                ),
-                ),
-
-              SizedBox(
-                  height: height * 0.03),
-
-              Align(
-                alignment:
-                    Alignment.centerRight,
-                child: ElevatedButton(
-                  style:
-                      ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Colors.black54,
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text(
-                    "Masuk",
-                    style: TextStyle(
-                        color:
-                            Colors.white),
                   ),
                 ),
-              ),
 
-              Container(
-                width: width * 0.85,
-                padding:
-                    EdgeInsets.all(width * 0.05),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                  borderRadius:
-                      BorderRadius.circular(
-                          25),
+                SizedBox(
+                  height: height * 0.03,
                 ),
-                child: Column(
-                  children: [
-                    Text(
-                      "DAFTAR",
-                      style: TextStyle(
-                        fontSize:
-                            width * 0.06,
-                        fontWeight:
-                            FontWeight.bold,
+
+                Container(
+                  width: width * 0.85,
+                  padding: EdgeInsets.all(
+                    width * 0.05,
+                  ),
+
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius:
+                        BorderRadius.circular(
+                      25,
+                    ),
+                  ),
+
+                  child: Column(
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start,
+
+                    children: [
+                      Text(
+                        "REGISTER",
+                        style: TextStyle(
+                          fontSize:
+                              width * 0.06,
+                          fontWeight:
+                              FontWeight.bold,
+                        ),
                       ),
-                    ),
 
-                    SizedBox(
+                      SizedBox(
                         height:
-                            height * 0.02),
+                            height * 0.02,
+                      ),
 
-                    buildField(
-                    nameController,
-                    "Nama",
-                    ),
+                      buildField(
+                        nameController,
+                        "Nama",
+                      ),
 
-                    buildField(
-                    nimController,
-                    "NIM",
-                    ),
+                      buildField(
+                        nimController,
+                        "NIM",
+                      ),
 
-                    buildField(
-                    emailController,
-                    "Email",
-                    ),
+                      buildField(
+                        emailController,
+                        "Email",
+                      ),
 
-                    buildField(
-                    phoneController,
-                    "No HP",
-                    ),
+                      buildField(
+                        phoneController,
+                        "No HP",
+                      ),
 
-                    DropdownButtonFormField<String>(
-                    value: selectedRole,
-                    decoration: fieldDecoration(
-                        "Pilih Role",
-                    ),
-                    items: const [
-                        DropdownMenuItem(
-                        value: 'mahasiswa',
-                        child: Text('Mahasiswa'),
+                      DropdownButtonFormField<
+                          String>(
+                        value: selectedRole,
+                        decoration:
+                            fieldDecoration(
+                          "Pilih Role",
                         ),
-                        DropdownMenuItem(
-                        value: 'admin',
-                        child: Text('Admin'),
-                        ),
-                    ],
-                    onChanged: (value) {
-                        setState(() {
-                        selectedRole = value!;
-                        });
-                    },
-                    ),
+                        items: const [
+                          DropdownMenuItem(
+                            value:
+                                'mahasiswa',
+                            child: Text(
+                              'Mahasiswa',
+                            ),
+                          ),
+                          DropdownMenuItem(
+                            value: 'admin',
+                            child: Text(
+                              'Admin',
+                            ),
+                          ),
+                        ],
+                        onChanged: (value) {
+                          setState(() {
+                            selectedRole =
+                                value!;
+                          });
+                        },
+                      ),
 
-                    const SizedBox(height: 12),
+                      const SizedBox(
+                        height: 12,
+                      ),
 
-                    buildField(
-                    passwordController,
-                    "Password",
-                    obscure: true,
-                    ),
-                  ],
-                ),
-              ),
+                      buildField(
+                        passwordController,
+                        "Password",
+                        obscure: true,
+                      ),
 
-              SizedBox(
-                  height: height * 0.03),
+                      const SizedBox(
+                        height: 10,
+                      ),
 
-              SizedBox(
-                width: width * 0.35,
-                height: height * 0.055,
-                child: ElevatedButton(
-                  style:
-                      ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Colors.white,
-                    shape:
-                        RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius
-                              .circular(25),
-                    ),
-                  ),
-                  onPressed: isLoading
-                      ? null
-                      : register,
-                  child: isLoading
-                      ? const CircularProgressIndicator()
-                      : const Text(
-                          "Daftar",
-                          style: TextStyle(
-                            color:
-                                Colors.black,
+                      Row(
+                        mainAxisAlignment:
+                            MainAxisAlignment
+                                .center,
+                        children: [
+                          const Text(
+                            "Sudah memiliki akun? ",
+                          ),
+
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      const LoginScreen(),
+                                ),
+                              );
+                            },
+                            child: const Text(
+                              "Login",
+                              style: TextStyle(
+                                color:
+                                    Color(0xFF2F80ED),
+                                fontWeight:
+                                    FontWeight.bold,
+                                decoration:
+                                    TextDecoration
+                                        .underline,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(
+                        height: 15,
+                      ),
+
+                      Center(
+                        child: SizedBox(
+                          width:
+                              width * 0.35,
+                          height:
+                              height * 0.055,
+
+                          child:
+                              ElevatedButton(
+                            style:
+                                ElevatedButton
+                                    .styleFrom(
+                              backgroundColor:
+                                  Colors.white,
+                              shape:
+                                  RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius
+                                        .circular(
+                                  25,
+                                ),
+                              ),
+                            ),
+
+                            onPressed:
+                                isLoading
+                                    ? null
+                                    : register,
+
+                            child: isLoading
+                                ? const CircularProgressIndicator()
+                                : const Text(
+                                    "Daftar",
+                                    style:
+                                        TextStyle(
+                                      color:
+                                          Colors.black,
+                                    ),
+                                  ),
                           ),
                         ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
 
-              SizedBox(
-                  height: height * 0.05),
-            ],
+                SizedBox(
+                  height: height * 0.05,
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
-  }
+      ],
+    ),
+  );
 }
+    }
