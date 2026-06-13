@@ -68,13 +68,13 @@ class ApiService {
 
   // ================= KIRIM OTP =================
   Future<Map<String, dynamic>> sendOtp(
-    String nim,
+    String phone,
   ) async {
     try {
       final response = await dio.post(
         '/forgot-password/send-otp',
         data: {
-          'nim': nim,
+          'phone': phone,
         },
       );
 
@@ -89,14 +89,14 @@ class ApiService {
 
   // ================= VERIFIKASI OTP =================
   Future<Map<String, dynamic>> verifyOtp(
-    String nim,
+    String phone,
     String otp,
   ) async {
     try {
       final response = await dio.post(
         '/forgot-password/verify-otp',
         data: {
-          'nim': nim,
+          'phone': phone,
           'otp': otp,
         },
       );
@@ -112,7 +112,7 @@ class ApiService {
 
   // ================= RESET PASSWORD =================
 Future<Map<String, dynamic>> resetPassword(
-  String nim,
+  String phone,
   String otp,
   String password,
 ) async {
@@ -120,7 +120,7 @@ Future<Map<String, dynamic>> resetPassword(
     final response = await dio.post(
       '/forgot-password/reset',
       data: {
-        'nim': nim,
+        'phone': phone,
         'otp': otp,
         'password': password,
       },

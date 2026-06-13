@@ -16,7 +16,7 @@ class _ForgotPasswordScreenState
 
   final apiService = ApiService();
 
-  final nimController = TextEditingController();
+  final phoneController = TextEditingController();
   final otpController = TextEditingController();
 
   final passwordController =
@@ -31,7 +31,7 @@ class _ForgotPasswordScreenState
 
   @override
   void dispose() {
-    nimController.dispose();
+    phoneController.dispose();
     otpController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
@@ -59,10 +59,10 @@ class _ForgotPasswordScreenState
   }
 
   Future<void> sendOtp() async {
-  if (nimController.text.trim().isEmpty) {
+  if (phoneController.text.trim().isEmpty) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('NIM wajib diisi'),
+        content: Text('Nomor WhatsApp wajib diisi'),
       ),
     );
     return;
@@ -74,7 +74,7 @@ class _ForgotPasswordScreenState
 
   try {
     final result = await apiService.sendOtp(
-      nimController.text.trim(),
+      phoneController.text.trim(),
     );
 
     if (!mounted) return;
@@ -124,7 +124,7 @@ Future<void> verifyOtp() async {
 
   try {
     final result = await apiService.verifyOtp(
-      nimController.text.trim(),
+      phoneController.text.trim(),
       otpController.text.trim(),
     );
 
@@ -191,7 +191,7 @@ Future<void> resetPassword() async {
   try {
     final result =
         await apiService.resetPassword(
-      nimController.text.trim(),
+      phoneController.text.trim(),
       otpController.text.trim(),
       passwordController.text,
     );
@@ -267,8 +267,8 @@ Widget build(BuildContext context) {
           bottom: -180,
           right: -150,
           child: Container(
-            width: 300,
-            height: 300,
+            width: 350,
+            height: 350,
             decoration: BoxDecoration(
               color: Colors.grey.shade300,
               shape: BoxShape.circle,
@@ -329,9 +329,10 @@ Widget build(BuildContext context) {
 
 if (currentStep == 1) ...[
   TextField(
-    controller: nimController,
+    controller: phoneController,
+    keyboardType: TextInputType.phone,
     decoration: fieldDecoration(
-      "Masukkan NIM",
+      "Masukkan Nomor WhatsApp",
     ),
   ),
 
