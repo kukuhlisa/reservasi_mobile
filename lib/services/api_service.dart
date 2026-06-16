@@ -179,4 +179,49 @@ Future<Map<String, dynamic>> updateProfile(
     );
   }
 }
+
+Future<void> uploadPhoto(
+  int userId,
+  String path,
+) async {
+  try {
+    FormData formData = FormData.fromMap({
+      'photo': await MultipartFile.fromFile(path),
+    });
+
+    final response = await dio.post(
+      '/profile/$userId/photo',
+      data: formData,
+    );
+
+    print(response.data);
+  } on DioException catch (e) {
+    print(e.response?.data);
+    rethrow;
+  }
+}
+
+Future<Map<String, dynamic>> simpanPembayaran({
+  required int userId,
+  required String jenisPembayaran,
+  required String metodePembayaran,
+}) async {
+  try {
+    final response = await dio.post(
+      '/pembayaran',
+      data: {
+        'user_id': userId,
+        'jenis_pembayaran': jenisPembayaran,
+        'metode_pembayaran': metodePembayaran,
+      },
+    );
+
+    return response.data;
+  } on DioException catch (e) {
+    throw Exception(
+      e.response?.data['message'] ??
+          'Gagal menyimpan pembayaran',
+    );
+  }
+}
 }

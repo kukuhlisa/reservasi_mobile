@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/api_service.dart';
@@ -24,6 +27,9 @@ class _ProfilScreenState extends State<ProfilScreen> {
   bool isLoading = true;
   int? userId;
 
+  File? selectedImage;
+  String? photoUrl;
+
   @override
   void initState() {
     super.initState();
@@ -36,6 +42,8 @@ class _ProfilScreenState extends State<ProfilScreen> {
           await SharedPreferences.getInstance();
 
       userId = prefs.getInt('user_id');
+
+      print("USER ID = $userId");
 
       if (userId == null) {
         setState(() {
@@ -61,6 +69,8 @@ class _ProfilScreenState extends State<ProfilScreen> {
 
       phoneController.text =
           data['phone'];
+
+      photoUrl = data['photo'];
 
       setState(() {
         isLoading = false;
@@ -128,6 +138,32 @@ class _ProfilScreenState extends State<ProfilScreen> {
       (route) => false,
     );
   }
+
+Future<void> pickImage() async {
+  final picker = ImagePicker();
+
+  final pickedFile = await picker.pickImage(
+    source: ImageSource.gallery,
+  );
+
+  if (pickedFile != null) {
+    try {
+      print("PATH = ${pickedFile.path}");
+
+      await apiService.uploadPhoto(
+        userId!,
+        pickedFile.path,
+      );
+
+      print("UPLOAD BERHASIL");
+
+      await loadProfile();
+
+    } catch (e) {
+      print("ERROR UPLOAD = $e");
+    }
+  }
+}
 
   @override
   void dispose() {
@@ -207,137 +243,158 @@ Widget buildField({
         vertical: 20,
       ),
       child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: Colors.grey.shade300,
-          borderRadius: BorderRadius.circular(30),
-        ),
-        child: Column(
-          children: [
-            const CircleAvatar(
-              radius: 45,
-              backgroundColor: Colors.white,
-              child: Icon(
-                Icons.person,
-                size: 55,
-                color: Colors.grey,
-              ),
-            ),
+  width: double.infinity,
+  padding: const EdgeInsets.all(24),
+  decoration: BoxDecoration(
+    color: Colors.grey.shade300,
+    borderRadius: BorderRadius.circular(30),
+  ),
 
-            const SizedBox(height: 20),
+  child: Column(
+    children: [
 
-            const Text(
-              "Foto Profil",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
+      /// FOTO PROFIL
+      Stack(
+        alignment: Alignment.center,
+        children: [
+          CircleAvatar(
+            radius: 50,
+            backgroundColor: Colors.white,
+            backgroundImage: selectedImage != null
+                ? FileImage(selectedImage!)
+                : (photoUrl != null
+                    ? NetworkImage(photoUrl!)
+                    : null) as ImageProvider?,
+            child: selectedImage == null &&
+                    photoUrl == null
+                ? const Icon(
+                    Icons.person,
+                    size: 60,
+                    color: Colors.grey,
+                  )
+                : null,
+          ),
 
-            const SizedBox(height: 4),
-
-            const Text(
-              "Kelola informasi akun Anda",
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.black54,
-              ),
-            ),
-
-            const SizedBox(height: 30),
-
-            buildField(
-              controller: nameController,
-              label: "Nama Lengkap",
-            ),
-
-            const SizedBox(height: 16),
-
-            buildField(
-              controller: nimController,
-              label: "NIM",
-            ),
-
-            const SizedBox(height: 16),
-
-            buildField(
-              controller: emailController,
-              label: "Email",
-              keyboardType:
-                  TextInputType.emailAddress,
-            ),
-
-            const SizedBox(height: 16),
-
-            buildField(
-              controller: phoneController,
-              label: "Nomor WhatsApp",
-              keyboardType:
-                  TextInputType.phone,
-            ),
-
-            const SizedBox(height: 30),
-
-            SizedBox(
-              width: double.infinity,
-              height: 55,
-              child: ElevatedButton(
-                onPressed: saveProfile,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: Colors.black,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(18),
-                  ),
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: GestureDetector(
+              onTap: pickImage,
+              child: Container(
+                padding: const EdgeInsets.all(6),
+                decoration: const BoxDecoration(
+                  color: Colors.blue,
+                  shape: BoxShape.circle,
                 ),
-                child: const Text(
-                  "Simpan",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight:
-                        FontWeight.bold,
-                  ),
+                child: const Icon(
+                  Icons.camera_alt,
+                  color: Colors.white,
+                  size: 20,
                 ),
               ),
             ),
+          ),
+        ],
+      ),
 
-            const SizedBox(height: 15),
+      const SizedBox(height: 20),
 
-            SizedBox(
-              width: double.infinity,
-              height: 55,
-              child: ElevatedButton.icon(
-                onPressed: logout,
-                icon: const Icon(
-                  Icons.logout,
-                ),
-                label: const Text(
-                  "Logout",
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      Colors.red,
-                  foregroundColor:
-                      Colors.white,
-                  shape:
-                      RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.circular(
-                      18,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
+      const Text(
+        "Foto Profil",
+        style: TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.w700,
         ),
       ),
-    ),
-    ),
+
+      const SizedBox(height: 4),
+
+      const Text(
+        "Kelola informasi akun Anda",
+        style: TextStyle(
+          fontSize: 14,
+          color: Colors.black54,
+        ),
+      ),
+
+      const SizedBox(height: 30),
+
+      buildField(
+        controller: nameController,
+        label: "Nama Lengkap",
+      ),
+
+      const SizedBox(height: 16),
+
+      buildField(
+        controller: nimController,
+        label: "NIM",
+      ),
+
+      const SizedBox(height: 16),
+
+      buildField(
+        controller: emailController,
+        label: "Email",
+        keyboardType: TextInputType.emailAddress,
+      ),
+
+      const SizedBox(height: 16),
+
+      buildField(
+        controller: phoneController,
+        label: "Nomor WhatsApp",
+        keyboardType: TextInputType.phone,
+      ),
+
+      const SizedBox(height: 30),
+
+      // Tombol Simpan
+      SizedBox(
+        width: double.infinity,
+        height: 55,
+        child: ElevatedButton(
+          onPressed: saveProfile,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+            foregroundColor: Colors.black,
+            shape: RoundedRectangleBorder(
+              borderRadius:
+                  BorderRadius.circular(18),
+            ),
+          ),
+          child: const Text(
+            "Simpan",
+          ),
+        ),
+      ),
+
+      const SizedBox(height: 15),
+
+      // Tombol Logout
+            // Tombol Logout
+            SizedBox(
+        width: double.infinity,
+        height: 55,
+        child: ElevatedButton.icon(
+          onPressed: logout,
+          icon: const Icon(Icons.logout),
+          label: const Text("Logout"),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(18),
+            ),
+          ),
+        ),
+      ),
+    ],
   ),
-);
-}
+), // Container
+      ), // Padding
+    ), // SingleChildScrollView
+  ), // SafeArea
+    );
+  }
 }

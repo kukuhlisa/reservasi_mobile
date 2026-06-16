@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'riwayat_screen.dart';
 import 'tambah_screen.dart';
-import 'notifikasi_screen.dart';
+import 'monitoring_antrian_screen.dart';
 import 'profil_screen.dart';
+import 'pembayaran_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   final String name;
@@ -21,215 +22,328 @@ class _DashboardScreenState
     extends State<DashboardScreen> {
   int selectedIndex = 0;
 
-  void menuClicked(String title) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text("$title dibuka"),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(
-        0xFFF2F2F2,
-      ),
+      backgroundColor: const Color(0xFFF5F5F5),
 
       body: SafeArea(
         child: SingleChildScrollView(
-          padding:
-              const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
 
           child: Column(
             children: [
+
+              // HEADER
+              Row(
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "ANTRE.in",
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  CircleAvatar(
+                    radius: 22,
+                    backgroundColor:
+                        Colors.grey.shade200,
+                    child: const Icon(
+                      Icons.person,
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 15),
+
+              Row(
+                mainAxisAlignment:
+                    MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Beranda",
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  Column(
+                    crossAxisAlignment:
+                        CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        "Halo, ${widget.name}",
+                        style: const TextStyle(
+                          fontWeight:
+                              FontWeight.bold,
+                        ),
+                      ),
+                      const Text(
+                        "Mahasiswa",
+                        style: TextStyle(
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 20),
+
+              // SEARCH
+              TextField(
+                decoration: InputDecoration(
+                  hintText: "Cari",
+                  prefixIcon:
+                      const Icon(Icons.search),
+
+                  filled: true,
+                  fillColor: Colors.white,
+
+                  border: OutlineInputBorder(
+                    borderRadius:
+                        BorderRadius.circular(30),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // KARTU TANGGAL
               Container(
-                padding:
-                    const EdgeInsets.all(16),
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
 
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius:
-                      BorderRadius.circular(
-                    30,
-                  ),
+                      BorderRadius.circular(20),
                 ),
 
                 child: Column(
                   children: [
-                    Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment
-                              .spaceBetween,
-                      children: [
-                        const Text(
-                          "ANTRE.in",
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight:
-                                FontWeight.bold,
-                          ),
-                        ),
-                        CircleAvatar(
-                          backgroundColor:
-                              Colors.grey.shade200,
-                          child: const Icon(
-                            Icons.person,
-                          ),
-                        ),
-                      ],
+                    const Icon(
+                      Icons.calendar_month,
+                      size: 40,
                     ),
 
-                    const SizedBox(
-                      height: 15,
-                    ),
+                    const SizedBox(height: 10),
 
-                    Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment
-                              .spaceBetween,
-                      children: [
-                        const Text(
-                          "Beranda",
-                          style: TextStyle(
-                            fontWeight:
-                                FontWeight.bold,
-                          ),
-                        ),
-
-                        Column(
-                          crossAxisAlignment:
-                              CrossAxisAlignment
-                                  .end,
-                          children: [
-                            Text(
-                              "Halo, ${widget.name}",
-                              style:
-                                  const TextStyle(
-                                fontWeight:
-                                    FontWeight.bold,
-                              ),
-                            ),
-                            const Text(
-                              "Mahasiswa",
-                              style: TextStyle(
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(
-                      height: 15,
-                    ),
-
-                    TextField(
-                      decoration:
-                          InputDecoration(
-                        hintText: "Cari",
-
-                        prefixIcon:
-                            const Icon(
-                          Icons.search,
-                        ),
-
-                        filled: true,
-                        fillColor:
-                            Colors.grey.shade100,
-
-                        border:
-                            OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius
-                                  .circular(
-                            30,
-                          ),
-                        ),
+                    const Text(
+                      "Rabu",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight:
+                            FontWeight.bold,
                       ),
                     ),
 
-                    const SizedBox(
-                      height: 15,
+                    const Text(
+                      "17 Juni 2026",
                     ),
 
-                    Container(
-                      padding:
-                          const EdgeInsets.all(
-                        16,
-                      ),
+                    const SizedBox(height: 12),
+                    
+                  ],
+                ),
+              ),
 
-                      decoration:
-                          BoxDecoration(
-                        color:
-                            Colors.grey.shade200,
-                        borderRadius:
-                            BorderRadius
-                                .circular(
-                          20,
+              const SizedBox(height: 20),
+
+              // PEMBAYARAN
+              buildMenuCard(
+                title: "Pembayaran",
+                subtitle:
+                    "Layanan pembayaran UKT, KKL, dan administrasi lainnya.",
+                icon: Icons.payments,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          const PembayaranScreen(),
+                    ),
+                  );
+                },
+              ),
+
+              const SizedBox(height: 15),
+
+              // ADMINISTRASI
+              buildMenuCard(
+                title: "Administrasi",
+                subtitle:
+                    "Surat aktif kuliah, legalisir dan administrasi mahasiswa.",
+                icon: Icons.description,
+                onTap: () {
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(
+                    const SnackBar(
+                      content:
+                          Text("Administrasi dibuka"),
+                    ),
+                  );
+                },
+              ),
+
+              const SizedBox(height: 20),
+
+              // DAFTAR ANTRIAN
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius:
+                      BorderRadius.circular(20),
+                ),
+
+                child: Column(
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
+                  children: [
+
+                    const Text(
+                      "Daftar Antrian",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight:
+                            FontWeight.bold,
+                      ),
+                    ),
+
+                    const SizedBox(height: 15),
+
+                    ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor:
+                            Colors.blue.shade100,
+                        child: const Icon(
+                          Icons.person,
                         ),
                       ),
+                      title:
+                          const Text("A001"),
+                      subtitle:
+                          const Text("Menunggu"),
+                    ),
 
-                      child: Column(
-                        children: [
-                          const Icon(
-                            Icons.calendar_month,
-                            size: 40,
-                          ),
+                    ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor:
+                            Colors.blue.shade100,
+                        child: const Icon(
+                          Icons.person,
+                        ),
+                      ),
+                      title:
+                          const Text("A002"),
+                      subtitle:
+                          const Text("Menunggu"),
+                    ),
 
-                          const SizedBox(
-                            height: 8,
-                          ),
+                    ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor:
+                            Colors.blue.shade100,
+                        child: const Icon(
+                          Icons.person,
+                        ),
+                      ),
+                      title:
+                          const Text("A003"),
+                      subtitle:
+                          const Text("Menunggu"),
+                    ),
+                  ],
+                ),
+              ),
 
-                          const Text(
-                            "Senin",
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight:
-                                  FontWeight.bold,
-                            ),
-                          ),
+              const SizedBox(height: 20),
 
-                          const Text(
-                            "27 April 2026",
-                          ),
+              // INFO LAYANAN
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
 
-                          const SizedBox(
-                            height: 10,
-                          ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius:
+                      BorderRadius.circular(20),
+                ),
 
-                          ElevatedButton(
-                            onPressed: () {
-                              menuClicked(
-                                "Ambil Antrian",
-                              );
-                            },
-                            child: const Text(
-                              "Ambil Antrian",
-                            ),
-                          )
-                        ],
+                child: const Column(
+                  crossAxisAlignment:
+                      CrossAxisAlignment.start,
+
+                  children: [
+
+                    Text(
+                      "Info Layanan",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight:
+                            FontWeight.bold,
                       ),
                     ),
 
-                    const SizedBox(
-                      height: 15,
+                    SizedBox(height: 15),
+
+                    Text(
+                      "Senin - Jumat",
+                      style: TextStyle(
+                        fontWeight:
+                            FontWeight.bold,
+                      ),
                     ),
 
-                    buildMenuCard(
-                      "Pembayaran",
-                      Icons.payments,
+                    SizedBox(height: 5),
+
+                    Text(
+                      "08.00 - 12.00 WIB",
                     ),
 
-                    buildMenuCard(
-                      "Administrasi",
-                      Icons.description,
+                    Text(
+                      "13.30 - 16.00 WIB",
                     ),
 
-                    buildInfoCard(),
+                    Divider(),
 
-                    buildQueueCard(),
+                    Text(
+                      "Sabtu",
+                      style: TextStyle(
+                        fontWeight:
+                            FontWeight.bold,
+                      ),
+                    ),
+
+                    SizedBox(height: 5),
+
+                    Text(
+                      "08.00 - 12.00 WIB",
+                    ),
+
+                    Divider(),
+
+                    Text(
+                      "Minggu & Hari Libur",
+                      style: TextStyle(
+                        fontWeight:
+                            FontWeight.bold,
+                      ),
+                    ),
+
+                    SizedBox(height: 5),
+
+                    Text("Tutup"),
                   ],
                 ),
               ),
@@ -237,7 +351,7 @@ class _DashboardScreenState
           ),
         ),
       ),
-    
+
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: selectedIndex,
         selectedItemColor: Colors.blue,
@@ -250,14 +364,12 @@ class _DashboardScreenState
           });
 
           switch (index) {
-            case 0:
-              break;
-
             case 1:
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const RiwayatScreen(),
+                  builder: (_) =>
+                      const RiwayatScreen(),
                 ),
               );
               break;
@@ -266,7 +378,8 @@ class _DashboardScreenState
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const TambahScreen(),
+                  builder: (_) =>
+                      const TambahScreen(),
                 ),
               );
               break;
@@ -275,7 +388,8 @@ class _DashboardScreenState
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const NotifikasiScreen(),
+                  builder: (_) =>
+                      const MonitoringAntrianScreen(),
                 ),
               );
               break;
@@ -284,7 +398,8 @@ class _DashboardScreenState
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const ProfilScreen(),
+                  builder: (_) =>
+                      const ProfilScreen(),
                 ),
               );
               break;
@@ -294,121 +409,90 @@ class _DashboardScreenState
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Home',
+            label: "Home",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.history),
-            label: 'Riwayat',
+            label: "Riwayat",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.add_box),
-            label: 'Tambah',
+            label: "Tambah",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Notif',
+            icon: Icon(Icons.monitor_heart),
+            label: "Monitor",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: 'Profil',
+            label: "Profil",
           ),
         ],
       ),
     );
   }
 
-  Widget buildMenuCard(
-    String title,
-    IconData icon,
-  ) {
-    return Card(
-      margin:
-          const EdgeInsets.only(bottom: 12),
+  Widget buildMenuCard({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
 
-      shape: RoundedRectangleBorder(
-        borderRadius:
-            BorderRadius.circular(20),
-      ),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(16),
 
-      child: ListTile(
-        leading: Icon(icon),
-        title: Text(title),
-
-        subtitle: Text(
-          "Klik untuk membuka menu $title",
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius:
+              BorderRadius.circular(20),
         ),
 
-        trailing: const Icon(
-          Icons.arrow_forward_ios,
-        ),
+        child: Row(
+          children: [
 
-        onTap: () {
-          menuClicked(title);
-        },
-      ),
-    );
-  }
+            CircleAvatar(
+              radius: 28,
+              child: Icon(icon),
+            ),
 
-  Widget buildInfoCard() {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius:
-            BorderRadius.circular(20),
-      ),
+            const SizedBox(width: 15),
 
-      child: Padding(
-        padding:
-            const EdgeInsets.all(16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment:
+                    CrossAxisAlignment.start,
+                children: [
 
-        child: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
-          children: const [
-            Text(
-              "Info Layanan",
-              style: TextStyle(
-                fontWeight:
-                    FontWeight.bold,
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight:
+                          FontWeight.bold,
+                    ),
+                  ),
+
+                  const SizedBox(height: 5),
+
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
               ),
             ),
-            SizedBox(height: 10),
-            Text("Senin - Jumat"),
-            Text("08:00 - 16:00"),
-            Divider(),
-            Text("Sabtu"),
-            Text("08:00 - 12:00"),
+
+            const Icon(
+              Icons.arrow_forward_ios,
+              size: 18,
+            ),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildQueueCard() {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius:
-            BorderRadius.circular(20),
-      ),
-
-      child: Padding(
-        padding:
-            const EdgeInsets.all(16),
-
-        child: Column(
-          children: List.generate(
-            6,
-            (index) => ListTile(
-              leading: const CircleAvatar(
-                child: Icon(Icons.person),
-              ),
-              title: Text(
-                "User ${index + 1}",
-              ),
-              subtitle: const Text(
-                "Sedang Menunggu",
-              ),
-            ),
-          ),
         ),
       ),
     );
