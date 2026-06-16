@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../services/api_service.dart';
 import 'dashboard_screen.dart';
@@ -41,6 +42,30 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (!mounted) return;
+
+      // SIMPAN DATA USER
+      final prefs = await SharedPreferences.getInstance();
+
+      await prefs.setInt(
+        'user_id',
+        result['user']['id'],
+      );
+
+      await prefs.setString(
+        'token',
+        result['token'],
+      );
+
+      await prefs.setString(
+        'name',
+        result['user']['name'],
+      );
+
+      await prefs.setString(
+        'role',
+        result['user']['role'],
+      );
+
 
       Navigator.pushReplacement(
         context,

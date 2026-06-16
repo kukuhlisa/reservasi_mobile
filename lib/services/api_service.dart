@@ -134,4 +134,49 @@ Future<Map<String, dynamic>> resetPassword(
     );
   }
 }
+
+
+Future<Map<String, dynamic>> getProfile(
+  int userId,
+) async {
+  try {
+    final response = await dio.get(
+      '/profile/$userId',
+    );
+
+    return response.data;
+  } on DioException catch (e) {
+    throw Exception(
+      e.response?.data['message'] ??
+      'Gagal mengambil profil',
+    );
+  }
+}
+
+Future<Map<String, dynamic>> updateProfile(
+  int userId,
+  String name,
+  String nim,
+  String email,
+  String phone,
+) async {
+  try {
+    final response = await dio.put(
+      '/profile/$userId',
+      data: {
+        'name': name,
+        'nim': nim,
+        'email': email,
+        'phone': phone,
+      },
+    );
+
+    return response.data;
+  } on DioException catch (e) {
+    throw Exception(
+      e.response?.data['message'] ??
+      'Gagal memperbarui profil',
+    );
+  }
+}
 }
