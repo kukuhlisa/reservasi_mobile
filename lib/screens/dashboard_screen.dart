@@ -15,12 +15,10 @@ class DashboardScreen extends StatefulWidget {
   });
 
   @override
-  State<DashboardScreen> createState() =>
-      _DashboardScreenState();
+  State<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _DashboardScreenState
-    extends State<DashboardScreen> {
+class _DashboardScreenState extends State<DashboardScreen> {
   int selectedIndex = 0;
 
   @override
@@ -37,8 +35,7 @@ class _DashboardScreenState
 
               // HEADER
               Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
                     "ANTRE.in",
@@ -48,22 +45,11 @@ class _DashboardScreenState
                     ),
                   ),
 
-                  InkWell(
-                    borderRadius: BorderRadius.circular(50),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const ProfilScreen(),
-                        ),
-                      );
-                    },
-                    child: CircleAvatar(
-                      radius: 22,
-                      backgroundColor: Colors.grey.shade200,
-                      child: const Icon(
-                        Icons.person,
-                      ),
+                  CircleAvatar(
+                    radius: 22,
+                    backgroundColor: Colors.grey.shade200,
+                    child: const Icon(
+                      Icons.person,
                     ),
                   ),
                 ],
@@ -72,8 +58,7 @@ class _DashboardScreenState
               const SizedBox(height: 15),
 
               Row(
-                mainAxisAlignment:
-                    MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Text(
                     "Beranda",
@@ -83,32 +68,22 @@ class _DashboardScreenState
                     ),
                   ),
 
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const ProfilScreen(),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        "Halo, ${widget.name}",
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
                         ),
-                      );
-                    },
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          "Halo, ${widget.name}",
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
+                      ),
+                      const Text(
+                        "Mahasiswa",
+                        style: TextStyle(
+                          fontSize: 12,
                         ),
-                        const Text(
-                          "Mahasiswa",
-                          style: TextStyle(
-                            fontSize: 12,
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -119,15 +94,13 @@ class _DashboardScreenState
               TextField(
                 decoration: InputDecoration(
                   hintText: "Cari",
-                  prefixIcon:
-                      const Icon(Icons.search),
+                  prefixIcon: const Icon(Icons.search),
 
                   filled: true,
                   fillColor: Colors.white,
 
                   border: OutlineInputBorder(
-                    borderRadius:
-                        BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(30),
                     borderSide: BorderSide.none,
                   ),
                 ),
@@ -142,8 +115,7 @@ class _DashboardScreenState
 
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius:
-                      BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(20),
                 ),
 
                 child: Column(
@@ -159,8 +131,7 @@ class _DashboardScreenState
                       "Rabu",
                       style: TextStyle(
                         fontSize: 24,
-                        fontWeight:
-                            FontWeight.bold,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
 
@@ -169,25 +140,22 @@ class _DashboardScreenState
                     ),
 
                     const SizedBox(height: 12),
-                    
                   ],
                 ),
               ),
 
               const SizedBox(height: 20),
 
-              // PEMBAYARAN
+              // PEMBAYARAN (.PNG ASSET)
               buildMenuCard(
                 title: "Pembayaran",
-                subtitle:
-                    "Layanan pembayaran UKT, KKL, dan administrasi lainnya.",
-                icon: Icons.payments,
+                subtitle: "Layanan pembayaran UKT, KKL, dan administrasi lainnya.",
+                imagePath: "assets/images/pembayaran.png", // Menggunakan path gambar .png
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) =>
-                          const PembayaranScreen(),
+                      builder: (_) => const PembayaranScreen(),
                     ),
                   );
                 },
@@ -195,20 +163,18 @@ class _DashboardScreenState
 
               const SizedBox(height: 15),
 
-              // ADMINISTRASI
+              // ADMINISTRASI (.PNG ASSET)
               buildMenuCard(
                 title: "Administrasi",
-                subtitle:
-                    "Surat aktif kuliah, legalisir dan administrasi mahasiswa.",
-                icon: Icons.description,
+                subtitle: "Surat aktif kuliah, legalisir dan administrasi mahasiswa.",
+                imagePath: "assets/images/administrasi.png", // Menggunakan path gambar .png
                 onTap: () {
                   Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) =>
-                        const AdministrasiScreen(),
-                  ),
-                );
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const AdministrasiScreen(),
+                    ),
+                  );
                 },
               ),
 
@@ -221,21 +187,18 @@ class _DashboardScreenState
 
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius:
-                      BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(20),
                 ),
 
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
 
                     const Text(
                       "Daftar Antrian",
                       style: TextStyle(
                         fontSize: 18,
-                        fontWeight:
-                            FontWeight.bold,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
 
@@ -243,44 +206,35 @@ class _DashboardScreenState
 
                     ListTile(
                       leading: CircleAvatar(
-                        backgroundColor:
-                            Colors.blue.shade100,
+                        backgroundColor: Colors.blue.shade100,
                         child: const Icon(
                           Icons.person,
                         ),
                       ),
-                      title:
-                          const Text("A001"),
-                      subtitle:
-                          const Text("Menunggu"),
+                      title: const Text("A001"),
+                      subtitle: const Text("Menunggu"),
                     ),
 
                     ListTile(
                       leading: CircleAvatar(
-                        backgroundColor:
-                            Colors.blue.shade100,
+                        backgroundColor: Colors.blue.shade100,
                         child: const Icon(
                           Icons.person,
                         ),
                       ),
-                      title:
-                          const Text("A002"),
-                      subtitle:
-                          const Text("Menunggu"),
+                      title: const Text("A002"),
+                      subtitle: const Text("Menunggu"),
                     ),
 
                     ListTile(
                       leading: CircleAvatar(
-                        backgroundColor:
-                            Colors.blue.shade100,
+                        backgroundColor: Colors.blue.shade100,
                         child: const Icon(
                           Icons.person,
                         ),
                       ),
-                      title:
-                          const Text("A003"),
-                      subtitle:
-                          const Text("Menunggu"),
+                      title: const Text("A003"),
+                      subtitle: const Text("Menunggu"),
                     ),
                   ],
                 ),
@@ -295,22 +249,18 @@ class _DashboardScreenState
 
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius:
-                      BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(20),
                 ),
 
                 child: const Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
 
                   children: [
-
                     Text(
                       "Info Layanan",
                       style: TextStyle(
                         fontSize: 18,
-                        fontWeight:
-                            FontWeight.bold,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
 
@@ -319,8 +269,7 @@ class _DashboardScreenState
                     Text(
                       "Senin - Jumat",
                       style: TextStyle(
-                        fontWeight:
-                            FontWeight.bold,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
 
@@ -339,8 +288,7 @@ class _DashboardScreenState
                     Text(
                       "Sabtu",
                       style: TextStyle(
-                        fontWeight:
-                            FontWeight.bold,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
 
@@ -355,8 +303,7 @@ class _DashboardScreenState
                     Text(
                       "Minggu & Hari Libur",
                       style: TextStyle(
-                        fontWeight:
-                            FontWeight.bold,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
 
@@ -387,8 +334,7 @@ class _DashboardScreenState
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) =>
-                      const RiwayatScreen(),
+                  builder: (_) => const RiwayatScreen(),
                 ),
               );
               break;
@@ -397,8 +343,7 @@ class _DashboardScreenState
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) =>
-                      const TambahScreen(),
+                  builder: (_) => const TambahScreen(),
                 ),
               );
               break;
@@ -407,8 +352,7 @@ class _DashboardScreenState
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) =>
-                      const MonitoringAntrianScreen(),
+                  builder: (_) => const MonitoringAntrianScreen(),
                 ),
               );
               break;
@@ -417,8 +361,7 @@ class _DashboardScreenState
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) =>
-                      const ProfilScreen(),
+                  builder: (_) => const ProfilScreen(),
                 ),
               );
               break;
@@ -451,10 +394,11 @@ class _DashboardScreenState
     );
   }
 
+  // UPDATE: Fungsi pembantu diubah menggunakan Image.asset dan transparan CircleAvatar
   Widget buildMenuCard({
     required String title,
     required String subtitle,
-    required IconData icon,
+    required String imagePath,
     required VoidCallback onTap,
   }) {
     return InkWell(
@@ -466,8 +410,7 @@ class _DashboardScreenState
 
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius:
-              BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(20),
         ),
 
         child: Row(
@@ -475,23 +418,33 @@ class _DashboardScreenState
 
             CircleAvatar(
               radius: 28,
-              child: Icon(icon),
+              backgroundColor: const Color(0xFFE8EAF6), // Warna latar belakang pastel lembut untuk ikon gambar
+              child: ClipOval(
+                child: Image.asset(
+                  imagePath,
+                  width: 36,
+                  height: 36,
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) {
+                    // Fallback jika file gambar tidak ditemukan atau salah ketik path
+                    return const Icon(Icons.broken_image, size: 28);
+                  },
+                ),
+              ),
             ),
 
             const SizedBox(width: 15),
 
             Expanded(
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
 
                   Text(
                     title,
                     style: const TextStyle(
                       fontSize: 18,
-                      fontWeight:
-                          FontWeight.bold,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
 
