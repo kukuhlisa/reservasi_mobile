@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'kartu_antrian_screen.dart';
+import 'pilih_sesi_screen.dart';
 
-class CashScreen extends StatefulWidget {
+class CashScreen extends StatelessWidget {
   final String jenisPembayaran;
 
   const CashScreen({
@@ -11,21 +11,9 @@ class CashScreen extends StatefulWidget {
   });
 
   @override
-  State<CashScreen> createState() =>
-      _CashScreenState();
-}
-
-class _CashScreenState
-    extends State<CashScreen> {
-
-  String sesi = "A";
-
-  @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-      backgroundColor:
-          const Color(0xFFF5F6FA),
+      backgroundColor: const Color(0xFFF5F6FA),
 
       appBar: AppBar(
         title: const Text(
@@ -41,11 +29,10 @@ class _CashScreenState
               CrossAxisAlignment.start,
 
           children: [
-
             Text(
-              widget.jenisPembayaran,
+              jenisPembayaran,
               style: const TextStyle(
-                fontSize: 20,
+                fontSize: 22,
                 fontWeight:
                     FontWeight.bold,
               ),
@@ -53,92 +40,58 @@ class _CashScreenState
 
             const SizedBox(height: 20),
 
-            const Text(
-              "Pilih Sesi Pelayanan",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight:
-                    FontWeight.bold,
-              ),
-            ),
+            Container(
+              padding:
+                  const EdgeInsets.all(16),
 
-            const SizedBox(height: 15),
-
-            RadioListTile(
-              value: "A",
-              groupValue: sesi,
-
-              title: const Text(
-                "Sesi A",
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius:
+                    BorderRadius.circular(
+                  16,
+                ),
               ),
 
-              subtitle: const Text(
-                "08.00 - 12.00 WIB",
+              child: const Row(
+                children: [
+                  Icon(
+                    Icons.payments,
+                    size: 40,
+                  ),
+
+                  SizedBox(width: 12),
+
+                  Expanded(
+                    child: Text(
+                      "Silakan lakukan pembayaran langsung di loket KAPUS sesuai sesi yang dipilih.",
+                    ),
+                  ),
+                ],
               ),
-
-              onChanged: (value) {
-                setState(() {
-                  sesi = value!;
-                });
-              },
-            ),
-
-            RadioListTile(
-              value: "B",
-              groupValue: sesi,
-
-              title: const Text(
-                "Sesi B",
-              ),
-
-              subtitle: const Text(
-                "13.30 - 16.00 WIB",
-              ),
-
-              onChanged: (value) {
-                setState(() {
-                  sesi = value!;
-                });
-              },
             ),
 
             const Spacer(),
 
             SizedBox(
               width: double.infinity,
+              height: 55,
 
               child: ElevatedButton(
                 onPressed: () {
-
-                  String nomor;
-
-                  if (sesi == "A") {
-                    nomor = "A-001";
-                  } else {
-                    nomor = "B-001";
-                  }
-
                   Navigator.push(
                     context,
-
                     MaterialPageRoute(
                       builder: (_) =>
-                          KartuAntrianScreen(
-                        nomorAntrian:
-                            nomor,
-
-                        jenisPelayanan:
-                            widget
-                                .jenisPembayaran,
-
-                        sesi: sesi,
+                          PilihSesiScreen(
+                        jenisPembayaran:
+                            jenisPembayaran,
                       ),
                     ),
                   );
                 },
 
                 child: const Text(
-                  "Ambil Antrian",
+                  "Pilih Sesi",
                 ),
               ),
             ),

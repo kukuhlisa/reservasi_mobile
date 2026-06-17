@@ -2,7 +2,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import 'metode_pembayaran_screen.dart';
-import 'upload_persyaratan_screen.dart';
 
 class UploadPersyaratanScreen extends StatefulWidget {
   final String jenisPembayaran;
@@ -82,21 +81,20 @@ class _UploadPersyaratanScreenState
               width: double.infinity,
 
               child: ElevatedButton(
-                onPressed: isComplete
-                    ? () {
-                        Navigator.push(
-                          context,
-
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                UploadPersyaratanScreen(
-                                  jenisPembayaran: title,
-                                  syarat: syarat,
-                                )
-                          ),
-                        );
-                      }
-                    : null,
+              onPressed: isComplete
+                  ? () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              MetodePembayaranScreen(
+                                jenisPembayaran:
+                                    widget.jenisPembayaran,
+                              ),
+                        ),
+                      );
+                    }
+                  : null,
 
                 child: const Text(
                   "Lanjutkan",

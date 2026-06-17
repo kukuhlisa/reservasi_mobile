@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'monitoring_antrian_screen.dart';
+
 class KartuAntrianScreen extends StatelessWidget {
   final String nomorAntrian;
   final String jenisPelayanan;
@@ -122,13 +124,11 @@ class KartuAntrianScreen extends StatelessWidget {
                     ),
 
                     onPressed: () {
-                      ScaffoldMessenger.of(
+                      Navigator.push(
                         context,
-                      ).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            "Fitur Monitoring Antrian segera hadir",
-                          ),
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              const MonitoringAntrianScreen(),
                         ),
                       );
                     },

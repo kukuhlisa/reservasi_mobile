@@ -1,18 +1,77 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class MonitoringAntrianScreen extends StatelessWidget {
-  const MonitoringAntrianScreen({super.key});
+class MonitoringAntrianScreen
+    extends StatefulWidget {
+
+  const MonitoringAntrianScreen({
+    super.key,
+  });
+
+  @override
+  State<MonitoringAntrianScreen>
+      createState() =>
+          _MonitoringAntrianScreenState();
+}
+
+class _MonitoringAntrianScreenState
+    extends State<MonitoringAntrianScreen> {
+
+  String nomor = "-";
+  String jenis = "-";
+  String status = "-";
+  String sesi = "-";
+
+  @override
+  void initState() {
+    super.initState();
+    loadData();
+  }
+
+  Future<void> loadData() async {
+
+    final prefs =
+        await SharedPreferences.getInstance();
+
+    setState(() {
+      nomor =
+          prefs.getString(
+            'nomor_antrian',
+          ) ??
+          '-';
+
+      jenis =
+          prefs.getString(
+            'jenis_pelayanan',
+          ) ??
+          '-';
+
+      status =
+          prefs.getString(
+            'status_antrian',
+          ) ??
+          '-';
+
+      sesi =
+          prefs.getString(
+            'sesi',
+          ) ??
+          '-';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor:
+          const Color(0xFFF5F5F5),
 
       appBar: AppBar(
-        centerTitle: true,
         title: const Text(
           "Monitoring Antrean",
         ),
+        centerTitle: true,
       ),
 
       body: Padding(
@@ -23,29 +82,31 @@ class MonitoringAntrianScreen extends StatelessWidget {
 
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(20),
+              padding:
+                  const EdgeInsets.all(20),
 
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius:
-                    BorderRadius.circular(20),
+                    BorderRadius.circular(
+                  20,
+                ),
               ),
 
-              child: const Column(
+              child: Column(
                 children: [
 
-                  Text(
-                    "Nomor Yang Sedang Dipanggil",
-                    style: TextStyle(
-                      fontSize: 16,
-                    ),
+                  const Text(
+                    "Nomor Antrian Anda",
                   ),
 
-                  SizedBox(height: 10),
+                  const SizedBox(
+                    height: 10,
+                  ),
 
                   Text(
-                    "A-005",
-                    style: TextStyle(
+                    nomor,
+                    style: const TextStyle(
                       fontSize: 48,
                       fontWeight:
                           FontWeight.bold,
@@ -57,50 +118,28 @@ class MonitoringAntrianScreen extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            Expanded(
-              child: ListView(
-                children: const [
+            Card(
+              child: ListTile(
+                title: const Text(
+                  "Jenis Pelayanan",
+                ),
+                subtitle: Text(jenis),
+              ),
+            ),
 
-                  ListTile(
-                    leading:
-                        Icon(Icons.person),
-                    title: Text("A-001"),
-                    subtitle:
-                        Text("Selesai"),
-                  ),
+            Card(
+              child: ListTile(
+                title:
+                    const Text("Sesi"),
+                subtitle: Text(sesi),
+              ),
+            ),
 
-                  ListTile(
-                    leading:
-                        Icon(Icons.person),
-                    title: Text("A-002"),
-                    subtitle:
-                        Text("Selesai"),
-                  ),
-
-                  ListTile(
-                    leading:
-                        Icon(Icons.person),
-                    title: Text("A-003"),
-                    subtitle:
-                        Text("Selesai"),
-                  ),
-
-                  ListTile(
-                    leading:
-                        Icon(Icons.person),
-                    title: Text("A-004"),
-                    subtitle:
-                        Text("Dipanggil"),
-                  ),
-
-                  ListTile(
-                    leading:
-                        Icon(Icons.person),
-                    title: Text("A-005"),
-                    subtitle:
-                        Text("Sedang Dilayani"),
-                  ),
-                ],
+            Card(
+              child: ListTile(
+                title:
+                    const Text("Status"),
+                subtitle: Text(status),
               ),
             ),
           ],
