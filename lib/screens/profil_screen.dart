@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:flutter/foundation.dart'; // Diperlukan untuk kIsWeb
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,12 +10,10 @@ class ProfilScreen extends StatefulWidget {
   const ProfilScreen({super.key});
 
   @override
-  State<ProfilScreen> createState() =>
-      _ProfilScreenState();
+  State<ProfilScreen> createState() => _ProfilScreenState();
 }
 
 class _ProfilScreenState extends State<ProfilScreen> {
-
   final apiService = ApiService();
 
   final nameController = TextEditingController();
@@ -27,7 +24,8 @@ class _ProfilScreenState extends State<ProfilScreen> {
   bool isLoading = true;
   int? userId;
 
-  File? selectedImage;
+  // Variabel penampung gambar
+  Uint8List? webImage; 
   String? photoUrl;
 
   @override
@@ -38,9 +36,7 @@ class _ProfilScreenState extends State<ProfilScreen> {
 
   Future<void> loadProfile() async {
     try {
-      final prefs =
-          await SharedPreferences.getInstance();
-
+      final prefs = await SharedPreferences.getInstance();
       userId = prefs.getInt('user_id');
 
       print("USER ID = $userId");
@@ -49,43 +45,27 @@ class _ProfilScreenState extends State<ProfilScreen> {
         setState(() {
           isLoading = false;
         });
-
         return;
       }
 
-      final data =
-          await apiService.getProfile(
-        userId!,
-      );
+      final data = await apiService.getProfile(userId!);
 
-      nameController.text =
-          data['name'];
-
-      nimController.text =
-          data['nim'];
-
-      emailController.text =
-          data['email'];
-
-      phoneController.text =
-          data['phone'];
-
+      nameController.text = data['name'] ?? '';
+      nimController.text = data['nim'] ?? '';
+      emailController.text = data['email'] ?? '';
+      phoneController.text = data['phone'] ?? '';
       photoUrl = data['photo'];
 
       setState(() {
         isLoading = false;
       });
-
     } catch (e) {
       setState(() {
         isLoading = false;
       });
 
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-        ),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
       );
     }
   }
@@ -100,30 +80,18 @@ class _ProfilScreenState extends State<ProfilScreen> {
         phoneController.text,
       );
 
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Profil berhasil diperbarui',
-          ),
-        ),
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Profil berhasil diperbarui')),
       );
-
     } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-        ),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
       );
     }
   }
 
   Future<void> logout() async {
-    final prefs =
-        await SharedPreferences.getInstance();
-
-    // hanya hapus token
+    final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
     await prefs.remove('user_id');
 
@@ -131,39 +99,55 @@ class _ProfilScreenState extends State<ProfilScreen> {
 
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(
-        builder: (_) =>
-            const LoginScreen(),
-      ),
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
       (route) => false,
     );
   }
 
-Future<void> pickImage() async {
-  final picker = ImagePicker();
+  // ================= FUNGSI PICK & UPLOAD IMAGE (FIXED) =================
+  Future<void> pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
 
-  final pickedFile = await picker.pickImage(
-    source: ImageSource.gallery,
-  );
+    if (pickedFile != null) {
+      try {
+        setState(() {
+          isLoading = true; // Aktifkan loading saat proses upload berjalan
+        });
 
-  if (pickedFile != null) {
-    try {
-      print("PATH = ${pickedFile.path}");
+        print("NAMA FILE = ${pickedFile.name}");
 
-      await apiService.uploadPhoto(
-        userId!,
-        pickedFile.path,
-      );
+        // Jika dijalankan di browser (Web), baca file ke biner bytes untuk visual instan di UI
+        if (kIsWeb) {
+          final bytes = await pickedFile.readAsBytes();
+          setState(() {
+            webImage = bytes;
+          });
+        }
 
-      print("UPLOAD BERHASIL");
+        // Jalankan fungsi upload dengan mengirimkan objek pickedFile utuh
+        await apiService.uploadPhoto(
+          userId!,
+          pickedFile,
+        );
 
-      await loadProfile();
-
-    } catch (e) {
-      print("ERROR UPLOAD = $e");
+        print("UPLOAD BERHASIL");
+        
+        // Muat ulang data profil terbaru dari database agar disinkronkan kembali
+        await loadProfile();
+      } catch (e) {
+        print("ERROR UPLOAD = $e");
+        setState(() {
+          isLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Gagal mengunggah foto: $e")),
+        );
+      }
     }
   }
-}
 
   @override
   void dispose() {
@@ -171,57 +155,49 @@ Future<void> pickImage() async {
     nimController.dispose();
     emailController.dispose();
     phoneController.dispose();
-
     super.dispose();
   }
 
-Widget buildField({
-  required TextEditingController controller,
-  required String label,
-  TextInputType keyboardType =
-      TextInputType.text,
-}) {
-  return Column(
-    crossAxisAlignment:
-        CrossAxisAlignment.start,
-    children: [
-      Text(
-        label,
-        style: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-          color: Colors.black54,
-        ),
-      ),
-
-      const SizedBox(height: 8),
-
-      TextField(
-        controller: controller,
-        keyboardType: keyboardType,
-        decoration: InputDecoration(
-          hintText: label,
-          filled: true,
-          fillColor: Colors.white,
-          contentPadding:
-              const EdgeInsets.symmetric(
-            horizontal: 18,
-            vertical: 16,
-          ),
-          border: OutlineInputBorder(
-            borderRadius:
-                BorderRadius.circular(16),
-            borderSide: BorderSide.none,
+  Widget buildField({
+    required TextEditingController controller,
+    required String label,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Colors.black54,
           ),
         ),
-      ),
-    ],
-  );
-}
+        const SizedBox(height: 8),
+        TextField(
+          controller: controller,
+          keyboardType: keyboardType,
+          decoration: InputDecoration(
+            hintText: label,
+            filled: true,
+            fillColor: Colors.white,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 18,
+              vertical: 16,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(16),
+              borderSide: BorderSide.none,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: const Color(0xffF2F2F2),
       appBar: AppBar(
@@ -232,169 +208,129 @@ Widget buildField({
         elevation: 0,
       ),
       body: isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
+          ? const Center(child: CircularProgressIndicator())
           : SafeArea(
-  child: SingleChildScrollView(
-    child: Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 20,
-        vertical: 20,
-      ),
-      child: Container(
-  width: double.infinity,
-  padding: const EdgeInsets.all(24),
-  decoration: BoxDecoration(
-    color: Colors.grey.shade300,
-    borderRadius: BorderRadius.circular(30),
-  ),
-
-  child: Column(
-    children: [
-
-      /// FOTO PROFIL
-      Stack(
-        alignment: Alignment.center,
-        children: [
-          CircleAvatar(
-            radius: 50,
-            backgroundColor: Colors.white,
-            backgroundImage: selectedImage != null
-                ? FileImage(selectedImage!)
-                : (photoUrl != null
-                    ? NetworkImage(photoUrl!)
-                    : null) as ImageProvider?,
-            child: selectedImage == null &&
-                    photoUrl == null
-                ? const Icon(
-                    Icons.person,
-                    size: 60,
-                    color: Colors.grey,
-                  )
-                : null,
-          ),
-
-          Positioned(
-            bottom: 0,
-            right: 0,
-            child: GestureDetector(
-              onTap: pickImage,
-              child: Container(
-                padding: const EdgeInsets.all(6),
-                decoration: const BoxDecoration(
-                  color: Colors.blue,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.camera_alt,
-                  color: Colors.white,
-                  size: 20,
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Column(
+                      children: [
+                        // --- FOTO PROFIL AREA ---
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            CircleAvatar(
+                              radius: 50,
+                              backgroundColor: Colors.white,
+                              // Aturan Pemilihan Gambar yang ditampilkan di UI
+                              backgroundImage: webImage != null
+                                  ? MemoryImage(webImage!) // Prioritas 1: Gambar lokal baru (Bytes)
+                                  : (photoUrl != null
+                                      ? NetworkImage(photoUrl!) // Prioritas 2: URL Database Laravel
+                                      : null) as ImageProvider?,
+                              child: webImage == null && photoUrl == null
+                                  ? const Icon(
+                                      Icons.person,
+                                      size: 60,
+                                      color: Colors.grey,
+                                    )
+                                  : null,
+                            ),
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: GestureDetector(
+                                onTap: pickImage,
+                                child: Container(
+                                  padding: const EdgeInsets.all(6),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.blue,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.camera_alt,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        const Text(
+                          "Foto Profil",
+                          style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+                        ),
+                        const SizedBox(height: 4),
+                        const Text(
+                          "Kelola informasi akun Anda",
+                          style: TextStyle(fontSize: 14, color: Colors.black54),
+                        ),
+                        const SizedBox(height: 30),
+                        buildField(controller: nameController, label: "Nama Lengkap"),
+                        const SizedBox(height: 16),
+                        buildField(controller: nimController, label: "NIM"),
+                        const SizedBox(height: 16),
+                        buildField(
+                          controller: emailController,
+                          label: "Email",
+                          keyboardType: TextInputType.emailAddress,
+                        ),
+                        const SizedBox(height: 16),
+                        buildField(
+                          controller: phoneController,
+                          label: "Nomor WhatsApp",
+                          keyboardType: TextInputType.phone,
+                        ),
+                        const SizedBox(height: 30),
+                        // Tombol Simpan
+                        SizedBox(
+                          width: double.infinity,
+                          height: 55,
+                          child: ElevatedButton(
+                            onPressed: saveProfile,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: Colors.black,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(18),
+                              ),
+                            ),
+                            child: const Text("Simpan"),
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                        // Tombol Logout
+                        SizedBox(
+                          width: double.infinity,
+                          height: 55,
+                          child: ElevatedButton.icon(
+                            onPressed: logout,
+                            icon: const Icon(Icons.logout),
+                            label: const Text("Logout"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(18),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-
-      const SizedBox(height: 20),
-
-      const Text(
-        "Foto Profil",
-        style: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-
-      const SizedBox(height: 4),
-
-      const Text(
-        "Kelola informasi akun Anda",
-        style: TextStyle(
-          fontSize: 14,
-          color: Colors.black54,
-        ),
-      ),
-
-      const SizedBox(height: 30),
-
-      buildField(
-        controller: nameController,
-        label: "Nama Lengkap",
-      ),
-
-      const SizedBox(height: 16),
-
-      buildField(
-        controller: nimController,
-        label: "NIM",
-      ),
-
-      const SizedBox(height: 16),
-
-      buildField(
-        controller: emailController,
-        label: "Email",
-        keyboardType: TextInputType.emailAddress,
-      ),
-
-      const SizedBox(height: 16),
-
-      buildField(
-        controller: phoneController,
-        label: "Nomor WhatsApp",
-        keyboardType: TextInputType.phone,
-      ),
-
-      const SizedBox(height: 30),
-
-      // Tombol Simpan
-      SizedBox(
-        width: double.infinity,
-        height: 55,
-        child: ElevatedButton(
-          onPressed: saveProfile,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.white,
-            foregroundColor: Colors.black,
-            shape: RoundedRectangleBorder(
-              borderRadius:
-                  BorderRadius.circular(18),
-            ),
-          ),
-          child: const Text(
-            "Simpan",
-          ),
-        ),
-      ),
-
-      const SizedBox(height: 15),
-
-      // Tombol Logout
-            // Tombol Logout
-            SizedBox(
-        width: double.infinity,
-        height: 55,
-        child: ElevatedButton.icon(
-          onPressed: logout,
-          icon: const Icon(Icons.logout),
-          label: const Text("Logout"),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.red,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(18),
-            ),
-          ),
-        ),
-      ),
-    ],
-  ),
-), // Container
-      ), // Padding
-    ), // SingleChildScrollView
-  ), // SafeArea
     );
   }
 }

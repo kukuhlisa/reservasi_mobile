@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:image_picker/image_picker.dart'; // Diperlukan untuk objek XFile
 
 class ApiService {
   final Dio dio = Dio(
@@ -29,8 +30,7 @@ class ApiService {
       return response.data;
     } on DioException catch (e) {
       throw Exception(
-        e.response?.data['message'] ??
-            'NIM atau password salah',
+        e.response?.data['message'] ?? 'NIM atau password salah',
       );
     }
   }
@@ -60,8 +60,7 @@ class ApiService {
       return response.data;
     } on DioException catch (e) {
       throw Exception(
-        e.response?.data['message'] ??
-            'Register gagal',
+        e.response?.data['message'] ?? 'Register gagal',
       );
     }
   }
@@ -81,8 +80,7 @@ class ApiService {
       return response.data;
     } on DioException catch (e) {
       throw Exception(
-        e.response?.data['message'] ??
-            'Gagal mengirim OTP',
+        e.response?.data['message'] ?? 'Gagal mengirim OTP',
       );
     }
   }
@@ -104,124 +102,128 @@ class ApiService {
       return response.data;
     } on DioException catch (e) {
       throw Exception(
-        e.response?.data['message'] ??
-            'OTP tidak valid',
+        e.response?.data['message'] ?? 'OTP tidak valid',
       );
     }
   }
 
   // ================= RESET PASSWORD =================
-Future<Map<String, dynamic>> resetPassword(
-  String phone,
-  String otp,
-  String password,
-) async {
-  try {
-    final response = await dio.post(
-      '/forgot-password/reset',
-      data: {
-        'phone': phone,
-        'otp': otp,
-        'password': password,
-      },
-    );
+  Future<Map<String, dynamic>> resetPassword(
+    String phone,
+    String otp,
+    String password,
+  ) async {
+    try {
+      final response = await dio.post(
+        '/forgot-password/reset',
+        data: {
+          'phone': phone,
+          'otp': otp,
+          'password': password,
+        },
+      );
 
-    return response.data;
-  } on DioException catch (e) {
-    throw Exception(
-      e.response?.data['message'] ??
-          'Gagal reset password',
-    );
+      return response.data;
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data['message'] ?? 'Gagal reset password',
+      );
+    }
   }
-}
 
+  // ================= GET PROFILE =================
+  Future<Map<String, dynamic>> getProfile(
+    int userId,
+  ) async {
+    try {
+      final response = await dio.get(
+        '/profile/$userId',
+      );
 
-Future<Map<String, dynamic>> getProfile(
-  int userId,
-) async {
-  try {
-    final response = await dio.get(
-      '/profile/$userId',
-    );
-
-    return response.data;
-  } on DioException catch (e) {
-    throw Exception(
-      e.response?.data['message'] ??
-      'Gagal mengambil profil',
-    );
+      return response.data;
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data['message'] ?? 'Gagal mengambil profil',
+      );
+    }
   }
-}
 
-Future<Map<String, dynamic>> updateProfile(
-  int userId,
-  String name,
-  String nim,
-  String email,
-  String phone,
-) async {
-  try {
-    final response = await dio.put(
-      '/profile/$userId',
-      data: {
-        'name': name,
-        'nim': nim,
-        'email': email,
-        'phone': phone,
-      },
-    );
+  // ================= UPDATE PROFILE =================
+  Future<Map<String, dynamic>> updateProfile(
+    int userId,
+    String name,
+    String nim,
+    String email,
+    String phone,
+  ) async {
+    try {
+      final response = await dio.put(
+        '/profile/$userId',
+        data: {
+          'name': name,
+          'nim': nim,
+          'email': email,
+          'phone': phone,
+        },
+      );
 
-    return response.data;
-  } on DioException catch (e) {
-    throw Exception(
-      e.response?.data['message'] ??
-      'Gagal memperbarui profil',
-    );
+      return response.data;
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data['message'] ?? 'Gagal memperbarui profil',
+      );
+    }
   }
-}
 
-Future<void> uploadPhoto(
-  int userId,
-  String path,
-) async {
-  try {
-    FormData formData = FormData.fromMap({
-      'photo': await MultipartFile.fromFile(path),
-    });
+  // ================= UPLOAD FOTO (FIXED WEB & MOBILE) =================
+  Future<void> uploadPhoto(
+    int userId,
+    XFile pickedFile, // Perbaikan: Menggunakan objek XFile, bukan String path
+  ) async {
+    try {
+      // Membaca file gambar menjadi bentuk biner bytes (Aman untuk Flutter Web)
+      final List<int> imageBytes = await pickedFile.readAsBytes();
 
-    final response = await dio.post(
-      '/profile/$userId/photo',
-      data: formData,
-    );
+      FormData formData = FormData.fromMap({
+        'photo': MultipartFile.fromBytes(
+          imageBytes,
+          filename: pickedFile.name, // Mengambil nama file asli beserta ekstensi
+        ),
+      });
 
-    print(response.data);
-  } on DioException catch (e) {
-    print(e.response?.data);
-    rethrow;
+      final response = await dio.post(
+        '/profile/$userId/photo',
+        data: formData,
+      );
+
+      print("Respon Berhasil: ${response.data}");
+    } on DioException catch (e) {
+      print("Eror Detail Server: ${e.response?.data}");
+      rethrow;
+    }
   }
-}
 
-Future<Map<String, dynamic>> simpanPembayaran({
-  required int userId,
-  required String jenisPembayaran,
-  required String metodePembayaran,
-}) async {
-  try {
-    final response = await dio.post(
-      '/pembayaran',
-      data: {
-        'user_id': userId,
-        'jenis_pembayaran': jenisPembayaran,
-        'metode_pembayaran': metodePembayaran,
-      },
-    );
+  // ================= SIMPAN PEMBAYARAN =================
+  Future<Map<String, dynamic>> simpanPembayaran({
+    required int userId,
+    required String jenisPembayaran,
+    required String metodePembayaran,
+  }) async {
+    try {
+      final response = await dio.post(
+        '/pembayaran',
+        data: {
+          'user_id': userId,
+          'jenis_pembayaran': jenisPembayaran,
+          'metode_pembayaran': metodePembayaran,
+        },
+      );
 
-    return response.data;
-  } on DioException catch (e) {
-    throw Exception(
-      e.response?.data['message'] ??
-          'Gagal menyimpan pembayaran',
-    );
+      return response.data;
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data['message'] ?? 'Gagal menyimpan pembayaran',
+      );
+    }
   }
-}
 }
