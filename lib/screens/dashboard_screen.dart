@@ -4,6 +4,7 @@ import 'tambah_screen.dart';
 import 'monitoring_antrian_screen.dart';
 import 'profil_screen.dart';
 import 'pembayaran_screen.dart';
+import 'administrasi_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   final String name;
@@ -183,13 +184,13 @@ class _DashboardScreenState
                     "Surat aktif kuliah, legalisir dan administrasi mahasiswa.",
                 icon: Icons.description,
                 onTap: () {
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(
-                    const SnackBar(
-                      content:
-                          Text("Administrasi dibuka"),
-                    ),
-                  );
+                  Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) =>
+                        const AdministrasiScreen(),
+                  ),
+                );
                 },
               ),
 

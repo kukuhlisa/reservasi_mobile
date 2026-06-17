@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'metode_pembayaran_screen.dart';
+import 'data_diri_pembayaran_screen.dart';
 
 class PembayaranScreen extends StatelessWidget {
   const PembayaranScreen({super.key});
@@ -157,21 +157,25 @@ class PembayaranScreen extends StatelessWidget {
           const SizedBox(height: 16),
 
           SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => MetodePembayaranScreen(
-                    jenisPembayaran: title,
-                    ),
-                  ),
-                );
-              },
-              child: const Text("Antri"),
-            ),
+  width: double.infinity,
+  child: ElevatedButton(
+    onPressed: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) =>
+              DataDiriPembayaranScreen(
+            jenisPembayaran: title,
+            syarat: syarat,
           ),
+        ),
+      );
+    },
+    child: const Text(
+      "Antri",
+    ),
+  ),
+),
         ],
       ),
     );
