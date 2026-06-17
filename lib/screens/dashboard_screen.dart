@@ -48,12 +48,22 @@ class _DashboardScreenState
                     ),
                   ),
 
-                  CircleAvatar(
-                    radius: 22,
-                    backgroundColor:
-                        Colors.grey.shade200,
-                    child: const Icon(
-                      Icons.person,
+                  InkWell(
+                    borderRadius: BorderRadius.circular(50),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ProfilScreen(),
+                        ),
+                      );
+                    },
+                    child: CircleAvatar(
+                      radius: 22,
+                      backgroundColor: Colors.grey.shade200,
+                      child: const Icon(
+                        Icons.person,
+                      ),
                     ),
                   ),
                 ],
@@ -73,24 +83,32 @@ class _DashboardScreenState
                     ),
                   ),
 
-                  Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        "Halo, ${widget.name}",
-                        style: const TextStyle(
-                          fontWeight:
-                              FontWeight.bold,
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ProfilScreen(),
                         ),
-                      ),
-                      const Text(
-                        "Mahasiswa",
-                        style: TextStyle(
-                          fontSize: 12,
+                      );
+                    },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          "Halo, ${widget.name}",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                    ],
+                        const Text(
+                          "Mahasiswa",
+                          style: TextStyle(
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
