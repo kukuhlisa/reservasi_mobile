@@ -226,4 +226,89 @@ class ApiService {
       );
     }
   }
+
+Future simpanAntrian({
+
+required String nama,
+
+required String nim,
+
+required String email,
+
+required String whatsapp,
+
+required String jenisLayanan,
+
+required String kategoriLayanan,
+
+required String metodePembayaran,
+
+required String waktuLayanan,
+
+required String nomorAntrian,
+
+required String status,
+
+
+}) async{
+
+
+return await dio.post(
+
+'/antrian',
+
+data:{
+
+
+'nama':nama,
+
+'nim':nim,
+
+'email':email,
+
+'whatsapp':whatsapp,
+
+
+'jenis_layanan':jenisLayanan,
+
+
+'kategori_layanan':kategoriLayanan,
+
+
+'metode_pembayaran':metodePembayaran,
+
+
+'waktu_layanan':waktuLayanan,
+
+
+'nomor_antrian':nomorAntrian,
+
+
+'status':status
+
+
+}
+
+
+);
+
+
+}
+
+Future<List<dynamic>> getRiwayat(String nim) async {
+  try {
+    final response = await dio.get('/riwayat/$nim');
+
+    return response.data;
+
+  } on DioException catch (e) {
+
+    throw Exception(
+      e.response?.data['message']
+      ??
+      'Gagal mengambil riwayat'
+    );
+
+  }
+}
 }

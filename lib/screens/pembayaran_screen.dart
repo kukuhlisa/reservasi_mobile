@@ -25,7 +25,6 @@ class PembayaranScreen extends StatelessWidget {
             syarat: [
               "KRS semester berjalan",
               "Tagihan akademik",
-              "Bukti pembayaran",
             ],
             icon: Icons.payments,
           ),
@@ -40,7 +39,6 @@ class PembayaranScreen extends StatelessWidget {
             syarat: [
               "Formulir KKL",
               "KTM aktif",
-              "Bukti pembayaran",
             ],
             icon: Icons.school,
           ),
