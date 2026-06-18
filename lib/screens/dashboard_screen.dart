@@ -45,11 +45,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                   ),
 
-                  CircleAvatar(
-                    radius: 22,
-                    backgroundColor: Colors.grey.shade200,
-                    child: const Icon(
-                      Icons.person,
+                  InkWell(
+                    borderRadius: BorderRadius.circular(30),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ProfilScreen(),
+                        ),
+                      );
+                    },
+                    child: CircleAvatar(
+                      radius: 22,
+                      backgroundColor: Colors.grey.shade200,
+                      child: const Icon(Icons.person),
                     ),
                   ),
                 ],
