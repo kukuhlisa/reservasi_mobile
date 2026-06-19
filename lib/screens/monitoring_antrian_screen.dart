@@ -21,6 +21,8 @@ class _MonitoringAntrianScreenState
   String jenis = "-";
   String status = "-";
   String sesi = "-";
+  String lokasi = "-";
+  String jam = "-";
 
   @override
   void initState() {
@@ -55,6 +57,18 @@ class _MonitoringAntrianScreenState
       sesi =
           prefs.getString(
             'sesi',
+          ) ??
+          '-';
+
+      lokasi =
+          prefs.getString(
+            'lokasi',
+          ) ??
+          '-';
+
+      jam =
+          prefs.getString(
+            'jam_pelayanan',
           ) ??
           '-';
     });
@@ -140,6 +154,30 @@ class _MonitoringAntrianScreenState
                 title:
                     const Text("Status"),
                 subtitle: Text(status),
+              ),
+            ),
+
+            Card(
+              child: ListTile(
+                title: const Text(
+                  "Lokasi Pelayanan",
+                ),
+
+                subtitle: Text(
+                  lokasi,
+                ),
+              ),
+            ),
+
+            Card(
+              child: ListTile(
+                title: const Text(
+                  "Waktu Pelayanan",
+                ),
+
+                subtitle: Text(
+                  jam,
+                ),
               ),
             ),
           ],

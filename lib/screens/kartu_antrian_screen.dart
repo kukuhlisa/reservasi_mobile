@@ -6,12 +6,14 @@ class KartuAntrianScreen extends StatelessWidget {
   final String nomorAntrian;
   final String jenisPelayanan;
   final String sesi;
+  final String lokasi;
 
   const KartuAntrianScreen({
     super.key,
     required this.nomorAntrian,
     required this.jenisPelayanan,
     required this.sesi,
+    required this.lokasi,
   });
 
   String get jamSesi {
@@ -98,6 +100,13 @@ class KartuAntrianScreen extends StatelessWidget {
                 buildInfoRow(
                   "Waktu Pelayanan",
                   jamSesi,
+                ),
+
+                const SizedBox(height: 15),
+
+                buildInfoRow(
+                  "Lokasi",
+                  lokasi,
                 ),
 
                 const SizedBox(height: 30),

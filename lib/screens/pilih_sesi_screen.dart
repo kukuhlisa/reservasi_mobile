@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'kartu_antrian_screen.dart';
 
@@ -20,6 +21,20 @@ class _PilihSesiScreenState
     extends State<PilihSesiScreen> {
 
   String sesi = "A";
+  String lokasi = "";
+
+  Future<void> bukaMaps(String url) async {
+
+  final Uri uri = Uri.parse(url);
+
+  if (await canLaunchUrl(uri)) {
+    await launchUrl(
+      uri,
+      mode: LaunchMode.externalApplication,
+    );
+  }
+
+}
 
   Future<void> ambilAntrian() async {
 
@@ -57,6 +72,24 @@ class _PilihSesiScreenState
       sesi,
     );
 
+    String jam;
+
+    if (sesi == "A") {
+      jam = "08.00 - 12.00 WIB";
+    } else {
+      jam = "13.30 - 16.00 WIB";
+    }
+
+    await prefs.setString(
+      'jam_pelayanan',
+      jam,
+    );
+
+    await prefs.setString(
+      'lokasi',
+      lokasi,
+    );
+
     if (!mounted) return;
 
     Navigator.push(
@@ -64,11 +97,14 @@ class _PilihSesiScreenState
       MaterialPageRoute(
         builder: (_) =>
             KartuAntrianScreen(
-          nomorAntrian:
-              nomorAntrian,
+          nomorAntrian: nomorAntrian,
+
           jenisPelayanan:
               widget.jenisPembayaran,
+
           sesi: sesi,
+
+          lokasi: lokasi,
         ),
       ),
     );
@@ -149,7 +185,102 @@ class _PilihSesiScreenState
               ),
             ),
 
+            const SizedBox(height: 25),
+
+            const Text(
+              "Pilih Lokasi Pelayanan",
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 15),
+
+            Card(
+              child: RadioListTile<String>(
+                value: "Kampus Berkoh",
+                groupValue: lokasi,
+
+                title: const Text("Kampus Berkoh"),
+
+                subtitle: const Text(
+                  "Kampus Berkoh",
+                ),
+
+                secondary: IconButton(
+
+                  icon: const Icon(
+                    Icons.map,
+                    color: Colors.blue,
+                  ),
+
+                  onPressed: () {
+
+                    bukaMaps(
+                      "https://maps.app.goo.gl/BbSdetHZcsRh82Qb8",
+                    );
+
+                  },
+
+                ),
+
+                onChanged: (value) {
+
+                  setState(() {
+
+                    lokasi = value!;
+
+                  });
+
+                },
+
+              ),
+            ),
+
+            Card(
+              child: RadioListTile<String>(
+                value: "Kampus Soewatio",
+                groupValue: lokasi,
+
+                title: const Text("Kampus Soewatio"),
+
+                subtitle: const Text(
+                  "Kampus Soewatio",
+                ),
+
+                secondary: IconButton(
+
+                  icon: const Icon(
+                    Icons.map,
+                    color: Colors.blue,
+                  ),
+
+                  onPressed: () {
+
+                    bukaMaps(
+                      "https://maps.app.goo.gl/XJKvDMX9DF63SGjaA",
+                    );
+
+                  },
+
+                ),
+
+                onChanged: (value) {
+
+                  setState(() {
+
+                    lokasi = value!;
+
+                  });
+
+                },
+
+              ),
+            ),
+
             const Spacer(),
+
 
             SizedBox(
               width: double.infinity,
