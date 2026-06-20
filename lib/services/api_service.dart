@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:image_picker/image_picker.dart'; // Diperlukan untuk objek XFile
+import 'package:http_parser/http_parser.dart'; // DITAMBAHKAN di bagian paling atas file Anda
+import 'package:shared_preferences/shared_preferences.dart'; // DITAMBAHKAN jika butuh token
 
 class ApiService {
   final Dio dio = Dio(
@@ -131,22 +133,35 @@ class ApiService {
     }
   }
 
-  // ================= GET PROFILE =================
-  Future<Map<String, dynamic>> getProfile(
-    int userId,
-  ) async {
-    try {
-      final response = await dio.get(
-        '/profile/$userId',
-      );
+  // ================= GET PROFILE (SINKRON DENGAN BACKEND) =================
+    Future<Map<String, dynamic>> getProfile(
+      int userId,
+    ) async {
+      try {
+        final response = await dio.get(
+          '/profile/$userId',
+        );
 
-      return response.data;
-    } on DioException catch (e) {
-      throw Exception(
-        e.response?.data['message'] ?? 'Gagal mengambil profil',
-      );
+        final data = response.data;
+
+        // Ambil kolom 'photo' dari database Laravel kamu
+        if (data['photo'] != null && data['photo'].toString().isNotEmpty) {
+          String photoPath = data['photo'];
+          
+          // Jika response Laravel sudah mengembalikan URL lengkap (misal lewat asset())
+          // atau jika masih berupa path mentah ("profiles/namafile.jpg")
+          if (!photoPath.startsWith('http')) {
+            data['photo'] = 'http://127.0.0.1:8000/storage/' + photoPath;
+          }
+        }
+
+        return data;
+      } on DioException catch (e) {
+        throw Exception(
+          e.response?.data['message'] ?? 'Gagal mengambil profil',
+        );
+      }
     }
-  }
 
   // ================= UPDATE PROFILE =================
   Future<Map<String, dynamic>> updateProfile(
@@ -175,33 +190,47 @@ class ApiService {
     }
   }
 
-  // ================= UPLOAD FOTO (FIXED WEB & MOBILE) =================
-  Future<void> uploadPhoto(
-    int userId,
-    XFile pickedFile, // Perbaikan: Menggunakan objek XFile, bukan String path
-  ) async {
-    try {
-      // Membaca file gambar menjadi bentuk biner bytes (Aman untuk Flutter Web)
-      final List<int> imageBytes = await pickedFile.readAsBytes();
+  // ================= UPLOAD FOTO (SINKRON DENGAN BACKEND) =================
+    Future<void> uploadPhoto(
+      int userId,
+      XFile pickedFile,
+    ) async {
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        final String? token = prefs.getString('token'); 
 
-      FormData formData = FormData.fromMap({
-        'photo': MultipartFile.fromBytes(
-          imageBytes,
-          filename: pickedFile.name, // Mengambil nama file asli beserta ekstensi
-        ),
-      });
+        final List<int> imageBytes = await pickedFile.readAsBytes();
 
-      final response = await dio.post(
-        '/profile/$userId/photo',
-        data: formData,
-      );
+        String extension = pickedFile.name.split('.').last.toLowerCase();
+        String mimeType = (extension == 'png') ? 'image/png' : 'image/jpeg';
 
-      print("Respon Berhasil: ${response.data}");
-    } on DioException catch (e) {
-      print("Eror Detail Server: ${e.response?.data}");
-      rethrow;
+        // Mengirimkan key 'photo' agar sesuai dengan $request->validate(['photo' => ...])
+        FormData formData = FormData.fromMap({
+          'photo': MultipartFile.fromBytes(
+            imageBytes,
+            filename: pickedFile.name, 
+            contentType: MediaType.parse(mimeType),
+          ),
+        });
+
+        final response = await dio.post(
+          '/profile/$userId/photo',
+          data: formData,
+          options: Options(
+            headers: {
+              if (token != null) 'Authorization': 'Bearer $token',
+            },
+          ),
+        );
+
+        print("Respon Berhasil: ${response.data}");
+      } on DioException catch (e) {
+        print("Eror Detail Server: ${e.response?.data}");
+        throw Exception(
+          e.response?.data['message'] ?? 'Gagal menyimpan foto ke server',
+        );
+      }
     }
-  }
 
   // ================= SIMPAN PEMBAYARAN =================
   Future<Map<String, dynamic>> simpanPembayaran({
