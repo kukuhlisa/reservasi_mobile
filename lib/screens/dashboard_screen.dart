@@ -213,7 +213,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               buildMenuCard(
                 title: "Pembayaran",
                 subtitle: "Layanan pembayaran UKT, KKL, dan administrasi lainnya.",
-                imagePath: "assets/images/pembayaran.png",
+                imagePath: "assets/images/pembayaran.png", // <--- HANYA STRING PATH SAJA
                 onTap: () {
                   Navigator.push(
                     context,
@@ -230,7 +230,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               buildMenuCard(
                 title: "Administrasi",
                 subtitle: "Surat aktif kuliah, legalisir dan administrasi mahasiswa.",
-                imagePath: "assets/images/administrasi.png",
+                imagePath: "assets/images/administrasi.png", // <--- HANYA STRING PATH SAJA
                 onTap: () {
                   Navigator.push(
                     context,
