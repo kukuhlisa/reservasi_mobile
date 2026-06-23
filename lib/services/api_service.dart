@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
-import 'package:image_picker/image_picker.dart'; // Diperlukan untuk objek XFile
-import 'package:http_parser/http_parser.dart'; // DITAMBAHKAN di bagian paling atas file Anda
-import 'package:shared_preferences/shared_preferences.dart'; // DITAMBAHKAN jika butuh token
+import 'package:image_picker/image_picker.dart'; 
+import 'package:http_parser/http_parser.dart'; 
+import 'package:shared_preferences/shared_preferences.dart'; 
 
 class ApiService {
   final Dio dio = Dio(
@@ -133,35 +133,32 @@ class ApiService {
     }
   }
 
-  // ================= GET PROFILE (SINKRON DENGAN BACKEND) =================
-    Future<Map<String, dynamic>> getProfile(
-      int userId,
-    ) async {
-      try {
-        final response = await dio.get(
-          '/profile/$userId',
-        );
+  // ================= GET PROFILE =================
+  Future<Map<String, dynamic>> getProfile(
+    int userId,
+  ) async {
+    try {
+      final response = await dio.get(
+        '/profile/$userId',
+      );
 
-        final data = response.data;
+      final data = response.data;
 
-        // Ambil kolom 'photo' dari database Laravel kamu
-        if (data['photo'] != null && data['photo'].toString().isNotEmpty) {
-          String photoPath = data['photo'];
-          
-          // Jika response Laravel sudah mengembalikan URL lengkap (misal lewat asset())
-          // atau jika masih berupa path mentah ("profiles/namafile.jpg")
-          if (!photoPath.startsWith('http')) {
-            data['photo'] = 'http://127.0.0.1:8000/storage/' + photoPath;
-          }
+      if (data['photo'] != null && data['photo'].toString().isNotEmpty) {
+        String photoPath = data['photo'];
+        
+        if (!photoPath.startsWith('http')) {
+          data['photo'] = 'http://127.0.0.1:8000/storage/' + photoPath;
         }
-
-        return data;
-      } on DioException catch (e) {
-        throw Exception(
-          e.response?.data['message'] ?? 'Gagal mengambil profil',
-        );
       }
+
+      return data;
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data['message'] ?? 'Gagal mengambil profil',
+      );
     }
+  }
 
   // ================= UPDATE PROFILE =================
   Future<Map<String, dynamic>> updateProfile(
@@ -190,47 +187,46 @@ class ApiService {
     }
   }
 
-  // ================= UPLOAD FOTO (SINKRON DENGAN BACKEND) =================
-    Future<void> uploadPhoto(
-      int userId,
-      XFile pickedFile,
-    ) async {
-      try {
-        final prefs = await SharedPreferences.getInstance();
-        final String? token = prefs.getString('token'); 
+  // ================= UPLOAD FOTO =================
+  Future<void> uploadPhoto(
+    int userId,
+    XFile pickedFile,
+  ) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final String? token = prefs.getString('token'); 
 
-        final List<int> imageBytes = await pickedFile.readAsBytes();
+      final List<int> imageBytes = await pickedFile.readAsBytes();
 
-        String extension = pickedFile.name.split('.').last.toLowerCase();
-        String mimeType = (extension == 'png') ? 'image/png' : 'image/jpeg';
+      String extension = pickedFile.name.split('.').last.toLowerCase();
+      String mimeType = (extension == 'png') ? 'image/png' : 'image/jpeg';
 
-        // Mengirimkan key 'photo' agar sesuai dengan $request->validate(['photo' => ...])
-        FormData formData = FormData.fromMap({
-          'photo': MultipartFile.fromBytes(
-            imageBytes,
-            filename: pickedFile.name, 
-            contentType: MediaType.parse(mimeType),
-          ),
-        });
+      FormData formData = FormData.fromMap({
+        'photo': MultipartFile.fromBytes(
+          imageBytes,
+          filename: pickedFile.name, 
+          contentType: MediaType.parse(mimeType),
+        ),
+      });
 
-        final response = await dio.post(
-          '/profile/$userId/photo',
-          data: formData,
-          options: Options(
-            headers: {
-              if (token != null) 'Authorization': 'Bearer $token',
-            },
-          ),
-        );
+      final response = await dio.post(
+        '/profile/$userId/photo',
+        data: formData,
+        options: Options(
+          headers: {
+            if (token != null) 'Authorization': 'Bearer $token',
+          },
+        ),
+      );
 
-        print("Respon Berhasil: ${response.data}");
-      } on DioException catch (e) {
-        print("Eror Detail Server: ${e.response?.data}");
-        throw Exception(
-          e.response?.data['message'] ?? 'Gagal menyimpan foto ke server',
-        );
-      }
+      print("Respon Berhasil: ${response.data}");
+    } on DioException catch (e) {
+      print("Eror Detail Server: ${e.response?.data}");
+      throw Exception(
+        e.response?.data['message'] ?? 'Gagal menyimpan foto ke server',
+      );
     }
+  }
 
   // ================= SIMPAN PEMBAYARAN =================
   Future<Map<String, dynamic>> simpanPembayaran({
@@ -256,88 +252,63 @@ class ApiService {
     }
   }
 
-Future simpanAntrian({
-
-required String nama,
-
-required String nim,
-
-required String email,
-
-required String whatsapp,
-
-required String jenisLayanan,
-
-required String kategoriLayanan,
-
-required String metodePembayaran,
-
-required String waktuLayanan,
-
-required String nomorAntrian,
-
-required String status,
-
-
-}) async{
-
-
-return await dio.post(
-
-'/antrian',
-
-data:{
-
-
-'nama':nama,
-
-'nim':nim,
-
-'email':email,
-
-'whatsapp':whatsapp,
-
-
-'jenis_layanan':jenisLayanan,
-
-
-'kategori_layanan':kategoriLayanan,
-
-
-'metode_pembayaran':metodePembayaran,
-
-
-'waktu_layanan':waktuLayanan,
-
-
-'nomor_antrian':nomorAntrian,
-
-
-'status':status
-
-
-}
-
-
-);
-
-
-}
-
-Future<List<dynamic>> getRiwayat(String nim) async {
-  try {
-    final response = await dio.get('/riwayat/$nim');
-
-    return response.data;
-
-  } on DioException catch (e) {
-
-    throw Exception(
-      e.response?.data['message']
-      ??
-      'Gagal mengambil riwayat'
+  // ================= SIMPAN ANTRIAN =================
+  Future simpanAntrian({
+    required String nama,
+    required String nim,
+    required String email,
+    required String whatsapp,
+    required String jenisLayanan,
+    required String kategoriLayanan,
+    required String metodePembayaran,
+    required String waktuLayanan,
+    required String nomorAntrian,
+    required String status,
+  }) async {
+    return await dio.post(
+      '/antrian',
+      data: {
+        'nama': nama,
+        'nim': nim,
+        'email': email,
+        'whatsapp': whatsapp,
+        'jenis_layanan': jenisLayanan,
+        'kategori_layanan': kategoriLayanan,
+        'metode_pembayaran': metodePembayaran,
+        'waktu_layanan': waktuLayanan,
+        'nomor_antrian': nomorAntrian,
+        'status': status
+      },
     );
-
   }
-}
-}
+
+  // ================= GET RIWAYAT =================
+  Future<List<dynamic>> getRiwayat(String nim) async {
+    try {
+      final response = await dio.get('/riwayat/$nim');
+      return response.data;
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data['message'] ?? 'Gagal mengambil riwayat'
+      );
+    }
+  }
+
+  // ================= GET DAFTAR ANTRIAN (PERBAIKAN MAP & LIST) =================
+  Future<List<dynamic>> fetchAntrian() async {
+    try {
+      final response = await dio.get('/antrian');
+      
+      // Mengatasi error tipe data '_JsonMap' jika Laravel membungkus array-nya di dalam objek
+      if (response.data is Map) {
+        return response.data['data'] ?? []; 
+      }
+      
+      return response.data; 
+    } on DioException catch (e) {
+      throw Exception(
+        e.response?.data['message'] ?? 'Gagal mengambil daftar antrean',
+      );
+    }
+  }
+} // Tanda kurung penutup class ApiService dipastikan aman di sini
