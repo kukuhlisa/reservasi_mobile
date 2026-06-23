@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // DITAMBAHKAN
+import 'package:intl/intl.dart'; // DITAMBAHKAN UNTUK FORMAT TANGGAL REAL-TIME
+import 'package:intl/date_symbol_data_local.dart'; // DITAMBAHKAN UNTUK LOCALIZATION
 import '../services/api_service.dart'; // DITAMBAHKAN (Sesuaikan path folder ApiService Anda)
 
 import 'riwayat_screen.dart';
@@ -29,9 +31,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
   String? photoUrl;
   bool isLoadingPhoto = true;
 
+  // DITAMBAHKAN: Variabel untuk menyimpan tanggal real-time
+  late DateTime _currentDate;
+
   @override
   void initState() {
     super.initState();
+    _currentDate = DateTime.now(); // Inisialisasi tanggal saat ini
+    initializeDateFormatting('id_ID', null).then((_) {
+      if (mounted) {
+        setState(() {}); // Refresh UI setelah format lokal Indonesia siap
+      }
+    });
     loadUserPhoto(); // Panggil fungsi memuat foto saat dashboard dibuka
   }
 
@@ -70,6 +81,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (photoUrl != null && photoUrl!.isNotEmpty) {
       profileImage = NetworkImage(photoUrl!);
     }
+
+    // Format Hari (Contoh: Rabu) dan Tanggal (Contoh: 17 Juni 2026) dalam Bahasa Indonesia
+    String namaHari = DateFormat('EEEE', 'id_ID').format(_currentDate);
+    String stringTanggal = DateFormat('dd MMMM yyyy', 'id_ID').format(_currentDate);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
@@ -171,7 +186,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
               const SizedBox(height: 20),
 
-              // KARTU TANGGAL
+              // KARTU TANGGAL (SUDAH DINAMIS & REAL-TIME)
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
@@ -190,16 +205,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                     const SizedBox(height: 10),
 
-                    const Text(
-                      "Rabu",
-                      style: TextStyle(
+                    Text(
+                      namaHari, // Menampilkan nama hari dinamis
+                      style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
 
-                    const Text(
-                      "17 Juni 2026",
+                    Text(
+                      stringTanggal, // Menampilkan tanggal, bulan, tahun dinamis
                     ),
 
                     const SizedBox(height: 12),
