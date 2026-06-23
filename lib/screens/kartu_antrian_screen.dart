@@ -24,139 +24,154 @@ class KartuAntrianScreen extends StatelessWidget {
     }
   }
 
+  // FUNGSI NAVIGASI CUSTOM (Biar bersih dan tidak duplikat kode)
+  void _navigateToMonitoring(BuildContext context) {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (_) => const MonitoringAntrianScreen(),
+      ),
+      (route) => route.isFirst, // Menyisakan halaman utama (Dashboard) di paling bawah stack
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF5F6FA),
+    return PopScope(
+      canPop: false, // Menahan tombol back bawaan HP Android agar tidak asal mundur
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        _navigateToMonitoring(context); // Lempar ke monitoring antrian jika tombol back HP ditekan
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF5F6FA),
 
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text("Kartu Antrian"),
-      ),
+        appBar: AppBar(
+          centerTitle: true,
+          title: const Text("Kartu Antrian"),
+          // MODIFIKASI: Kustom tombol back arrow di AppBar
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => _navigateToMonitoring(context),
+          ),
+        ),
 
-      body: Center(
-        child: SingleChildScrollView(
-          child: Container(
-            margin: const EdgeInsets.all(20),
-            padding: const EdgeInsets.all(20),
+        body: Center(
+          child: SingleChildScrollView(
+            child: Container(
+              margin: const EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
 
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(30),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30),
 
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 10,
-                  offset: Offset(0, 4),
-                ),
-              ],
-            ),
-
-            child: Column(
-              children: [
-
-                const Text(
-                  "NOMOR ANTRIAN ANDA",
-                  style: TextStyle(
-                    fontSize: 12,
-                    letterSpacing: 2,
-                    color: Colors.grey,
-                    fontWeight: FontWeight.w500,
+                boxShadow: const [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 10,
+                    offset: Offset(0, 4),
                   ),
-                ),
+                ],
+              ),
 
-                const SizedBox(height: 16),
+              child: Column(
+                children: [
 
-                Text(
-                  nomorAntrian,
-                  style: const TextStyle(
-                    fontSize: 64,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1E293B),
+                  const Text(
+                    "NOMOR ANTRIAN ANDA",
+                    style: TextStyle(
+                      fontSize: 12,
+                      letterSpacing: 2,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
-                ),
 
-                const SizedBox(height: 20),
+                  const SizedBox(height: 16),
 
-                const Divider(),
+                  Text(
+                    nomorAntrian,
+                    style: const TextStyle(
+                      fontSize: 64,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1E293B),
+                    ),
+                  ),
 
-                const SizedBox(height: 10),
+                  const SizedBox(height: 20),
 
-                buildInfoRow(
-                  "Jenis Pelayanan",
-                  jenisPelayanan,
-                ),
+                  const Divider(),
 
-                const SizedBox(height: 15),
+                  const SizedBox(height: 10),
 
-                buildInfoRow(
-                  "Kategori",
-                  jenisPelayanan,
-                ),
+                  buildInfoRow(
+                    "Jenis Pelayanan",
+                    jenisPelayanan,
+                  ),
 
-                const SizedBox(height: 15),
+                  const SizedBox(height: 15),
 
-                buildInfoRow(
-                  "Waktu Pelayanan",
-                  jamSesi,
-                ),
+                  buildInfoRow(
+                    "Kategori",
+                    jenisPelayanan,
+                  ),
 
-                const SizedBox(height: 15),
+                  const SizedBox(height: 15),
 
-                buildInfoRow(
-                  "Lokasi",
-                  lokasi,
-                ),
+                  buildInfoRow(
+                    "Waktu Pelayanan",
+                    jamSesi,
+                  ),
 
-                const SizedBox(height: 30),
+                  const SizedBox(height: 15),
 
-                SizedBox(
-                  width: double.infinity,
-                  height: 55,
+                  buildInfoRow(
+                    "Lokasi",
+                    lokasi,
+                  ),
 
-                  child: ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor:
-                          const Color(0xFF0F172A),
+                  const SizedBox(height: 30),
 
-                      foregroundColor:
-                          Colors.white,
+                  SizedBox(
+                    width: double.infinity,
+                    height: 55,
 
-                      shape:
-                          RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(
-                          30,
+                    child: ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor:
+                            const Color(0xFF0F172A),
+
+                        foregroundColor:
+                            Colors.white,
+
+                        shape:
+                            RoundedRectangleBorder(
+                          borderRadius:
+                              BorderRadius.circular(
+                            30,
+                          ),
+                        ),
+                      ),
+
+                      onPressed: () => _navigateToMonitoring(context),
+
+                      icon: const Icon(
+                        Icons.arrow_forward,
+                      ),
+
+                      label: const Text(
+                        "Monitoring Antrian",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight:
+                              FontWeight.bold,
                         ),
                       ),
                     ),
-
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              const MonitoringAntrianScreen(),
-                        ),
-                      );
-                    },
-
-                    icon: const Icon(
-                      Icons.arrow_forward,
-                    ),
-
-                    label: const Text(
-                      "Monitoring Antrian",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight:
-                            FontWeight.bold,
-                      ),
-                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
