@@ -258,7 +258,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
               const SizedBox(height: 20),
 
-              // DAFTAR ANTRIAN
+              // DAFTAR ANTRIAN (INTEGRASI API REAL DENGAN FUTUREBUILDER)
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
@@ -271,7 +271,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     const Text(
                       "Daftar Antrian",
                       style: TextStyle(
@@ -282,41 +281,83 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                     const SizedBox(height: 15),
 
-                    // PERBAIKAN: Mengganti ikon default di antrian dengan foto profil pengguna jika tersedia
-                    ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.blue.shade100,
-                        backgroundImage: profileImage,
-                        child: profileImage == null
-                            ? const Icon(Icons.person, color: Colors.blue)
-                            : null,
-                      ),
-                      title: const Text("A001"),
-                      subtitle: const Text("Menunggu"),
-                    ),
+                    FutureBuilder<List<dynamic>>(
+                      future: apiService.fetchAntrian(), // Memanggil fungsi API dengan Dio
+                      builder: (context, snapshot) {
+                        // 1. Loading State
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 20),
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
+                        }
 
-                    ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.blue.shade100,
-                        backgroundImage: profileImage,
-                        child: profileImage == null
-                            ? const Icon(Icons.person, color: Colors.blue)
-                            : null,
-                      ),
-                      title: const Text("A002"),
-                      subtitle: const Text("Menunggu"),
-                    ),
+                        // 2. Error State
+                        if (snapshot.hasError) {
+                          return Center(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              child: Text(
+                                "Gagal memuat antrean: ${snapshot.error}",
+                                style: const TextStyle(color: Colors.red),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          );
+                        }
 
-                    ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: Colors.blue.shade100,
-                        backgroundImage: profileImage,
-                        child: profileImage == null
-                            ? const Icon(Icons.person, color: Colors.blue)
-                            : null,
-                      ),
-                      title: const Text("A003"),
-                      subtitle: const Text("Menunggu"),
+                        // 3. Empty State
+                        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return const Center(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(vertical: 20),
+                              child: Text(
+                                "Tidak ada antrean mahasiswa saat ini.",
+                                style: TextStyle(color: Colors.grey),
+                              ),
+                            ),
+                          );
+                        }
+
+                        // 4. Success State (Render Data Asli)
+                        List<dynamic> daftarAntrian = snapshot.data!;
+
+                        return ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(), // Menghindari crash scrolling didalam SingleChildScrollView
+                          itemCount: daftarAntrian.length,
+                          itemBuilder: (context, index) {
+                            final antrian = daftarAntrian[index];
+                            final String statusAntrian = antrian['status'] ?? 'Menunggu';
+
+                            return ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              leading: CircleAvatar(
+                                backgroundColor: Colors.blue.shade100,
+                                backgroundImage: profileImage,
+                                child: profileImage == null
+                                    ? const Icon(Icons.person, color: Colors.blue)
+                                    : null,
+                              ),
+                              title: Text(
+                                antrian['nomor_antrian'] ?? 'A000',
+                                style: const TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              subtitle: Text(
+                                statusAntrian,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  color: statusAntrian.toLowerCase() == "menunggu"
+                                      ? Colors.orange.shade700
+                                      : Colors.green.shade700,
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -440,7 +481,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
               break;
 
             case 4:
-              // PERBAIKAN: Sama seperti AppBar, tambahkan penantian refresh data di sini
               await Navigator.push(
                 context,
                 MaterialPageRoute(
